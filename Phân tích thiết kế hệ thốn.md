@@ -1,0 +1,58 @@
+Tài liệu phân tích - thiết kế hệ thống 
+1.Phân tích yêu cầu hệ thống
+  Actors (Tác nhân)
+  Khách hàng (User)
+  Admin
+1.2Use Case chính
+Khách hàng:
+  Đăng ký / đăng nhập
+  Xem danh sách giày
+  Tìm kiếm sản phẩm
+  Xem chi tiết sản phẩm
+  Thêm vào giỏ hàng
+  Đặt hàng
+  Xem lịch sử đơn hàng
+Admin:
+  Quản lý sản phẩm (CRUD)
+  Quản lý đơn hàng
+  Quản lý người dùng
+1.3 Functional Requirements (Yêu cầu chức năng)
+    Người dùng đăng ký tài khoản
+    Người dùng đăng nhập
+    Xem danh sách sản phẩm
+    Thêm sản phẩm vào giỏ
+    Thanh toán
+    Admin thêm/sửa/xóa sản phẩm
+2. Thiết kế hệ thống
+Kiến trúc:
+   - Client (React)
+   - Server (NodeJS)
+   - Database (MongoDB)
+
+3.  Database:
+Users:
+    name
+    email
+    password
+    role
+Products:
+    name
+    price
+    description
+image
+    Orders:
+    userId
+    items
+    total
+    status
+4. API
+    POST /api/auth/register
+    POST /api/auth/login
+    GET /api/products
+    POST /api/orders
+5. Giao diện
+    Trang chủ
+    Trang sản phẩm
+    Trang chi tiết
+    Giỏ hàng
+    Thanh toán
