@@ -1,4 +1,5 @@
-Tài liệu phân tích - thiết kế hệ thống 
+Tài liệu phân tích - thiết kế hệ thống:
+
 1.Phân tích yêu cầu hệ thống
   Actors (Tác nhân)
   Khách hàng (User)
@@ -16,13 +17,17 @@ Admin:
   Quản lý sản phẩm (CRUD)
   Quản lý đơn hàng
   Quản lý người dùng
-1.3 Functional Requirements (Yêu cầu chức năng)
+1.3 Yêu cầu chức năng
     Người dùng đăng ký tài khoản
     Người dùng đăng nhập
     Xem danh sách sản phẩm
     Thêm sản phẩm vào giỏ
     Thanh toán
     Admin thêm/sửa/xóa sản phẩm
+1.4 Yêu cầu phi chức năng
+    Bảo mật (JWT, mã hóa mật khẩu)
+    Hiệu năng cao
+    Giao diện thân thiện
 2. Thiết kế hệ thống
 Kiến trúc:
    - Client (React)
