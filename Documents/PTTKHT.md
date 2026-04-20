@@ -98,7 +98,7 @@
 |---|---|---|
 | **Frontend** | React.js, Vite | Giao diện SPA tốc độ cao |
 | **Styling** | CSS Modules / Tailwind CSS | Giao diện responsive |
-| **Backend** | Node.js, Express.js | REST API server |
+| **Backend** | Node.js, Socket.io  | REST API server |
 | **Database** | MongoDB + Mongoose | Lưu trữ dữ liệu |
 | **Xác thực** | JWT (Access Token) | Bảo mật API |
 | **Ảnh** | Cloudinary | Lưu trữ ảnh sản phẩm |
