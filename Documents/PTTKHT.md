@@ -76,7 +76,7 @@
                   │ HTTP/HTTPS (REST API)
 ┌─────────────────▼───────────────────────────┐
 │              SERVER LAYER                   │
-│            Node.js + Express.js             │
+│            Node.js + Socket.io              │
 │  ┌──────────┐ ┌──────────┐ ┌─────────────┐  │
 │  │Auth Svc  │ │Product   │ │ Order Svc   │  │
 │  │          │ │Svc       │ │             │  │
