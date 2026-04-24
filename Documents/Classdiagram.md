@@ -78,7 +78,7 @@ Người dùng 1 ───────► N Đánh giá ◄────── 1 
                       └── thêmĐánhGiá()
 
 
-
+![Class Diagram](Images/Class_Diagram.jpg)
 
 ## Quan hệ giữa các lớp
 
