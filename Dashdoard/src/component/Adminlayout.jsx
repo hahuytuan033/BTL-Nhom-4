@@ -1,13 +1,13 @@
-import Sidebar from "./Sideba";
+import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 
 export default function AdminLayout({ children }) {
   return (
-    <div style={{ display: "flex" }}>
+    <div className="admin-layout">
       <Sidebar />
-      <div style={{ flex: 1 }}>
+      <div className="admin-main">
         <Navbar />
-        <div style={{ padding: "20px" }}>
+        <div className="admin-content">
           {children}
         </div>
       </div>
