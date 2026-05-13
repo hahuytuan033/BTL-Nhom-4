@@ -1,7 +1,9 @@
 import AdminLayout from "../../component/Adminlayout";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Products() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([
     {
       id: 1,
@@ -45,29 +47,6 @@ export default function Products() {
     }
   ]);
 
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [newProduct, setNewProduct] = useState({
-    name: "",
-    category: "",
-    price: "",
-    stock: ""
-  });
-
-  const handleAddProduct = () => {
-    if (newProduct.name && newProduct.category && newProduct.price && newProduct.stock) {
-      setProducts([
-        ...products,
-        {
-          id: products.length + 1,
-          ...newProduct,
-          status: "Có sẵn"
-        }
-      ]);
-      setNewProduct({ name: "", category: "", price: "", stock: "" });
-      setShowAddForm(false);
-    }
-  };
-
   const handleDeleteProduct = (id) => {
     setProducts(products.filter(p => p.id !== id));
   };
@@ -79,66 +58,10 @@ export default function Products() {
           <div>
             <h1 className="section-title">Quản Lý Sản Phẩm</h1>
           </div>
-          <button className="add-btn" onClick={() => setShowAddForm(!showAddForm)}>
+          <button className="add-btn" onClick={() => navigate('/add-product')}>
             ➕ Thêm Sản Phẩm
           </button>
         </div>
-
-        {showAddForm && (
-          <div className="form-card">
-            <h3 className="card-title">Thêm Sản Phẩm Mới</h3>
-            <div className="form-grid">
-              <div className="form-group">
-                <label className="info-label">Tên sản phẩm</label>
-                <input
-                  type="text"
-                  placeholder="Tên sản phẩm"
-                  value={newProduct.name}
-                  onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-                  className="input"
-                />
-              </div>
-              <div className="form-group">
-                <label className="info-label">Danh mục</label>
-                <input
-                  type="text"
-                  placeholder="Danh mục"
-                  value={newProduct.category}
-                  onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
-                  className="input"
-                />
-              </div>
-              <div className="form-group">
-                <label className="info-label">Giá</label>
-                <input
-                  type="text"
-                  placeholder="Giá"
-                  value={newProduct.price}
-                  onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
-                  className="input"
-                />
-              </div>
-              <div className="form-group">
-                <label className="info-label">Số lượng</label>
-                <input
-                  type="number"
-                  placeholder="Số lượng"
-                  value={newProduct.stock}
-                  onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })}
-                  className="input"
-                />
-              </div>
-            </div>
-            <div className="button-group">
-              <button type="button" className="submit-btn" onClick={handleAddProduct}>
-                Lưu Sản Phẩm
-              </button>
-              <button type="button" className="cancel-btn" onClick={() => setShowAddForm(false)}>
-                Hủy
-              </button>
-            </div>
-          </div>
-        )}
 
         <div className="card">
           <div className="table-wrapper">

@@ -201,10 +201,6 @@ export default function Dashboard() {
               <span>Thêm Khách Hàng</span>
             </button>
             <button className="action-btn">
-              <span className="action-icon">📦</span>
-              <span>Thêm Sản Phẩm</span>
-            </button>
-            <button className="action-btn">
               <span className="action-icon">📊</span>
               <span>Xem Báo Cáo</span>
             </button>

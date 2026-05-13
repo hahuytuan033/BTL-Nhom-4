@@ -226,7 +226,7 @@ export default function App() {
         <div className="relative w-full h-[450px] bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-sm overflow-hidden mb-12">
           <div className="absolute inset-0 bg-black/40 z-10"></div>
           <img 
-            src="https://images.unsplash.com/photo-1552346154-21d32810aba3?q=80&w=2070&auto=format&fit=crop" 
+            src="/images/banner.png" 
             alt="Hero" 
             className="w-full h-full object-cover"
           />

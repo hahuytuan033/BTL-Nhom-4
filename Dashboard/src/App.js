@@ -5,6 +5,7 @@ import Orders from "./page/Admin/Orders";
 import Users from "./page/Admin/Users";
 import Reports from "./page/Admin/Reports";
 import Settings from "./page/Admin/Settings";
+import AddProduct from "./page/Admin/AddProduct";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/products" element={<Products />} />
+        <Route path="/add-product" element={<AddProduct />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/users" element={<Users />} />
         <Route path="/reports" element={<Reports />} />
