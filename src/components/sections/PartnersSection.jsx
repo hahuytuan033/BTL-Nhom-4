@@ -1,7 +1,7 @@
 import { partnerBrands } from '../../data/products';
 
 /**
- * Section hiển thị danh sách đối tác tin cậy
+Section hiển thị danh sách đối tác tin cậy
  */
 const PartnersSection = () => (
   <section className="py-20 border-t border-zinc-900 mt-20">

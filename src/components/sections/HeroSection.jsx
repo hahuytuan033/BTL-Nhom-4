@@ -1,7 +1,7 @@
 import { ShieldCheck, ArrowRight } from 'lucide-react';
 
 /**
- * Hero Banner - Banner chính hiển thị đầu trang
+ Banner chính hiển thị đầu trang
  */
 const HeroSection = () => (
   <section className="relative w-full h-[500px] md:h-[600px] rounded-sm overflow-hidden mb-16 group">

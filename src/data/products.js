@@ -1,6 +1,5 @@
 /**
- * Dữ liệu sản phẩm mẫu
- * Tách riêng để dễ thay thế bằng API thực tế sau này
+  File này để tạo tạm dữ liệu mẫu trong khi đang vọc vạch cloudinary
  */
 export const shoeData = [
   {

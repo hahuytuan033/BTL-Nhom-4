@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Search, Menu, User, ShoppingBag } from 'lucide-react';
 
 /**
- * Thanh điều hướng chính (Navigation Bar)
+ * Thanh điều hướng chính
  * Có hiệu ứng trong suốt khi ở đầu trang, đổi nền khi scroll
  */
 const Navbar = ({ onLoginClick }) => {

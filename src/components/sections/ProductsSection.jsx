@@ -3,8 +3,6 @@ import SectionHeader from '../ui/SectionHeader';
 
 /**
  * Section hiển thị danh sách sản phẩm
- * Tái sử dụng cho cả "Đề xuất cho bạn" và "Hàng mới cập bến"
- * 
  * @param {string} title - Tiêu đề section
  * @param {string} subtitle - Mô tả phụ
  * @param {Array} products - Danh sách sản phẩm

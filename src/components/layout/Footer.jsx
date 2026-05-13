@@ -1,9 +1,6 @@
 import { Instagram, Facebook as FacebookIcon, Twitter, Github } from 'lucide-react';
 import { footerServices, footerSupport } from '../../data/products';
 
-/**
- * Footer chính của trang
- */
 const Footer = () => (
   <footer className="bg-[#050505] border-t border-zinc-900 pt-24 pb-12">
     <div className="max-w-[1600px] mx-auto px-4 md:px-10">
