@@ -7,20 +7,24 @@ require('dotenv').config();
 const { connectDb } = require('./config/db');
 const { createUser } = require('./models/userModel');
 
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+    }
+});
+
+const PORT = process.env.PORT || 5000;
+
+app.use(cors());
+app.use(express.json());
+
 // Start Server & DB
 async function startServer() {
     try {
         await connectDb();
         
-        // Tạo tài khoản Admin demo trước
-        await createUser({
-            fullName: "Nguyễn Tuấn Phúc",
-            email: "admin@gmail.com",
-            password: "123456",
-            role: "admin",
-            status: "active"
-        });
-
         server.listen(PORT, () => {
             console.log(`🚀 Server running on http://localhost:${PORT}`);
         });
@@ -30,3 +34,11 @@ async function startServer() {
 }
 
 startServer();
+
+// Socket.io connection logic (optional)
+io.on('connection', (socket) => {
+    console.log('a user connected');
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+    });
+});
