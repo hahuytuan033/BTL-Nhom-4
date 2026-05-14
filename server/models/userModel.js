@@ -1,31 +1,39 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
     fullName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: { 
+        type: String, 
+        required: function() { return this.provider === 'local'; } 
+    },
     role: { type: String, default: 'user' },
     status: { type: String, default: 'active' },
-    type: { type: String, default: 'user' },
+    provider: { type: String, default: 'local' }, // 'local', 'google', etc.
+    providerId: { type: String },
+    avatar: { type: String },
     createdAt: { type: Date, default: Date.now }
 });
 
+// Mã hóa mật khẩu trước khi lưu (Sửa lỗi: Không dùng 'next' với async)
+userSchema.pre('save', async function() {
+    if (!this.isModified('password') || !this.password) return;
+    
+    try {
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+    } catch (err) {
+        throw err;
+    }
+});
+
+// Phương thức kiểm tra mật khẩu
+userSchema.methods.comparePassword = async function(candidatePassword) {
+    if (!this.password) return false;
+    return bcrypt.compare(candidatePassword, this.password);
+};
+
 const User = mongoose.model('User', userSchema);
 
-async function createUser(userData) {
-    try {
-        // Sử dụng email làm filter để upsert giống logic cũ của Couchbase
-        const user = await User.findOneAndUpdate(
-            { email: userData.email },
-            { ...userData },
-            { upsert: true, new: true, setDefaultsOnInsert: true }
-        );
-        console.log(`👤 Đã tạo/cập nhật user: ${user.email}`);
-        return user;
-    } catch (error) {
-        console.error('❌ Lỗi khi tạo user:', error.message);
-        throw error;
-    }
-}
-
-module.exports = { User, createUser };
+module.exports = { User };

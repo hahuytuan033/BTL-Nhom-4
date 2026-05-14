@@ -5,7 +5,7 @@ const { Server } = require('socket.io');
 require('dotenv').config();
 
 const { connectDb } = require('./config/db');
-const { createUser } = require('./models/userModel');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 const server = http.createServer(app);
@@ -19,6 +19,9 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+
+// Routes
+app.use('/api/users', userRoutes);
 
 // Start Server & DB
 async function startServer() {
