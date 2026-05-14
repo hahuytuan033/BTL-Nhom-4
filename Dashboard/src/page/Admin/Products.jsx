@@ -1,55 +1,41 @@
 import AdminLayout from "../../component/Adminlayout";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function Products() {
   const navigate = useNavigate();
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      name: "Giày Thể Thao Nike Air Max",
-      category: "Giày Thể Thao",
-      price: "2.5M",
-      stock: 45,
-      status: "Có sẵn"
-    },
-    {
-      id: 2,
-      name: "Giày Sneaker Adidas Superstar",
-      category: "Giày Sneaker",
-      price: "2.1M",
-      stock: 32,
-      status: "Có sẵn"
-    },
-    {
-      id: 3,
-      name: "Giày Da Nam Classic",
-      category: "Giày Da",
-      price: "1.8M",
-      stock: 18,
-      status: "Có sẵn"
-    },
-    {
-      id: 4,
-      name: "Giày Chạy Bộ New Balance",
-      category: "Giày Chạy Bộ",
-      price: "2.9M",
-      stock: 2,
-      status: "Sắp hết"
-    },
-    {
-      id: 5,
-      name: "Giày Sandal Nữ Đế Bệt",
-      category: "Sandal",
-      price: "850K",
-      stock: 56,
-      status: "Có sẵn"
-    }
-  ]);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const handleDeleteProduct = (id) => {
-    setProducts(products.filter(p => p.id !== id));
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/products`);
+        setProducts(data);
+        setLoading(false);
+      } catch (err) {
+        setError('Không thể tải dữ liệu sản phẩm');
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const handleDeleteProduct = async (id) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
+      try {
+        await axios.delete(`${import.meta.env.VITE_API_URL}/products/${id}`);
+        setProducts(products.filter(p => p._id !== id));
+      } catch (err) {
+        alert("Lỗi khi xóa sản phẩm");
+      }
+    }
   };
+
+  if (loading) return <AdminLayout><div className="page-container">Đang tải...</div></AdminLayout>;
+  if (error) return <AdminLayout><div className="page-container">{error}</div></AdminLayout>;
 
   return (
     <AdminLayout>
@@ -68,8 +54,7 @@ export default function Products() {
             <table className="table">
               <thead className="table-header">
                 <tr className="table-row">
-                  <th className="th">ID</th>
-                  <th className="th">Tên Sản Phẩm</th>
+                  <th className="th">Sản Phẩm</th>
                   <th className="th">Danh Mục</th>
                   <th className="th">Giá</th>
                   <th className="th">Kho</th>
@@ -79,15 +64,15 @@ export default function Products() {
               </thead>
               <tbody>
                 {products.map((product) => (
-                  <tr key={product.id} className="table-row">
-                    <td className="td">{product.id}</td>
+                  <tr key={product._id} className="table-row">
                     <td className="td">
-                      <strong>{product.name}</strong>
+                      <strong>{product.name}</strong><br/>
+                      <small style={{color: '#6b7280'}}>{product.brand}</small>
                     </td>
                     <td className="td">{product.category}</td>
                     <td className="td">
                       <span className="summary-value" style={{ color: "var(--success)" }}>
-                        {product.price}
+                        {product.price.toLocaleString('vi-VN')} đ
                       </span>
                     </td>
                     <td className="td">{product.stock}</td>
@@ -107,7 +92,7 @@ export default function Products() {
                       <button
                         type="button"
                         className="delete-btn"
-                        onClick={() => handleDeleteProduct(product.id)}
+                        onClick={() => handleDeleteProduct(product._id)}
                       >
                         🗑️ Xóa
                       </button>
@@ -126,4 +111,3 @@ export default function Products() {
     </AdminLayout>
   );
 }
-

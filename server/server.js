@@ -6,6 +6,8 @@ require('dotenv').config();
 
 const { connectDb } = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
+const productRoutes = require('./routes/productRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 
 const app = express();
 const server = http.createServer(app);
@@ -22,6 +24,8 @@ app.use(express.json());
 
 // Routes
 app.use('/api/users', userRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Start Server & DB
 async function startServer() {

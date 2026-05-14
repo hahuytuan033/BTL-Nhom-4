@@ -1,106 +1,96 @@
 import AdminLayout from "../../component/Adminlayout";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function Dashboard() {
-  const [stats] = useState([
+  const [data, setData] = useState({
+    products: [],
+    orders: [],
+    users: []
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [productsRes, ordersRes, usersRes] = await Promise.all([
+          axios.get(`${import.meta.env.VITE_API_URL}/products`),
+          axios.get(`${import.meta.env.VITE_API_URL}/orders`),
+          axios.get(`${import.meta.env.VITE_API_URL}/users`)
+        ]);
+
+        setData({
+          products: productsRes.data,
+          orders: ordersRes.data,
+          users: usersRes.data
+        });
+        setLoading(false);
+      } catch (error) {
+        console.error("Lỗi khi tải dữ liệu dashboard", error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const calculateTotalRevenue = () => {
+    return data.orders
+      .filter(order => order.status === "Hoàn thành")
+      .reduce((total, order) => total + order.amount, 0);
+  };
+
+  const getRecentOrders = () => {
+    return data.orders.slice(0, 5); // Lấy 5 đơn hàng mới nhất
+  };
+
+  const getTopProducts = () => {
+    // Sắp xếp sản phẩm theo số lượng kho thấp nhất (chỉ mang tính minh họa nếu không có trường sales)
+    return [...data.products].sort((a, b) => a.stock - b.stock).slice(0, 4);
+  };
+
+  const stats = [
     {
       id: 1,
       title: "Tổng Sản Phẩm",
-      value: "1,248",
+      value: data.products.length,
       icon: "📦",
       color: "#3B82F6",
-      change: "+12%"
     },
     {
       id: 2,
-      title: "Đơn Hàng Hôm Nay",
-      value: "84",
+      title: "Đơn Hàng (Tất cả)",
+      value: data.orders.length,
       icon: "🛒",
       color: "#10B981",
-      change: "+8%"
     },
     {
       id: 3,
-      title: "Người Dùng Tích Cực",
-      value: "356",
+      title: "Khách Hàng",
+      value: data.users.filter(u => u.role === 'user').length,
       icon: "👥",
       color: "#F59E0B",
-      change: "+5%"
     },
     {
       id: 4,
       title: "Doanh Thu",
-      value: "2.5T",
+      value: `${(calculateTotalRevenue() / 1000000).toFixed(1)}M`,
       icon: "💰",
       color: "#EF4444",
-      change: "+15%"
     }
-  ]);
-
-  const [recentOrders] = useState([
-    {
-      id: 1,
-      orderNumber: "#ORD-2024-001",
-      customer: "Nguyễn Văn A",
-      amount: "1.5M",
-      status: "Hoàn thành",
-      date: "2024-05-08"
-    },
-    {
-      id: 2,
-      orderNumber: "#ORD-2024-002",
-      customer: "Trần Thị B",
-      amount: "2.3M",
-      status: "Đang xử lý",
-      date: "2024-05-07"
-    },
-    {
-      id: 3,
-      orderNumber: "#ORD-2024-003",
-      customer: "Lê Văn C",
-      amount: "890K",
-      status: "Chờ xác nhận",
-      date: "2024-05-07"
-    },
-    {
-      id: 4,
-      orderNumber: "#ORD-2024-004",
-      customer: "Phạm Thị D",
-      amount: "3.2M",
-      status: "Hoàn thành",
-      date: "2024-05-06"
-    },
-    {
-      id: 5,
-      orderNumber: "#ORD-2024-005",
-      customer: "Đặng Văn E",
-      amount: "1.8M",
-      status: "Đang giao",
-      date: "2024-05-06"
-    }
-  ]);
-
-  const [topProducts] = useState([
-    { id: 1, name: "Giày Thể Thao Nike Air Max", sales: 245, revenue: "6.1M" },
-    { id: 2, name: "Giày Sneaker Adidas Superstar", sales: 198, revenue: "5.7M" },
-    { id: 3, name: "Giày Chạy Bộ New Balance", sales: 156, revenue: "4.3M" },
-    { id: 4, name: "Giày Da Nam Classic", sales: 234, revenue: "7.0M" }
-  ]);
+  ];
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "Hoàn thành":
-        return "#10B981";
-      case "Đang xử lý":
-        return "#F59E0B";
-      case "Chờ xác nhận":
-        return "#3B82F6";
-      case "Đang giao":
-        return "#8B5CF6";
-      default:
-        return "#6B7280";
+      case "Hoàn thành": return "#10B981";
+      case "Đang xử lý": return "#F59E0B";
+      case "Chờ xác nhận": return "#3B82F6";
+      case "Đang giao": return "#8B5CF6";
+      default: return "#6B7280";
     }
   };
+
+  if (loading) return <AdminLayout><div className="page-container">Đang tải Dashboard...</div></AdminLayout>;
 
   return (
     <AdminLayout>
@@ -108,7 +98,7 @@ export default function Dashboard() {
         <div className="section-header">
           <div>
             <h1 className="section-title">Bảng Điều Khiển</h1>
-            <p className="section-subtitle">Chào mừng quay lại, Admin!</p>
+            <p className="section-subtitle">Dữ liệu được cập nhật theo thời gian thực từ MongoDB</p>
           </div>
         </div>
 
@@ -119,9 +109,6 @@ export default function Dashboard() {
                 <div className="metric-icon" style={{ color: stat.color }}>
                   {stat.icon}
                 </div>
-                <span className="stat-change" style={{ color: stat.color }}>
-                  {stat.change}
-                </span>
               </div>
               <p className="stat-label">{stat.title}</p>
               <h2 className="stat-number">{stat.value}</h2>
@@ -133,7 +120,7 @@ export default function Dashboard() {
           <div className="card">
             <div className="card-header">
               <h2 className="card-title">Đơn Hàng Gần Đây</h2>
-              <button type="button" className="card-link">Xem tất cả →</button>
+              <button type="button" className="card-link" onClick={() => window.location.href='/orders'}>Xem tất cả →</button>
             </div>
             <div className="table-wrapper">
               <table className="table">
@@ -143,27 +130,30 @@ export default function Dashboard() {
                     <th className="th">Khách Hàng</th>
                     <th className="th">Số Tiền</th>
                     <th className="th">Trạng Thái</th>
-                    <th className="th">Ngày</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {recentOrders.map((order) => (
-                    <tr key={order.id} className="table-row">
+                  {getRecentOrders().map((order) => (
+                    <tr key={order._id} className="table-row">
                       <td className="td">
                         <span className="order-number">{order.orderNumber}</span>
                       </td>
                       <td className="td">{order.customer}</td>
                       <td className="td">
-                        <strong style={{ color: "#10B981" }}>{order.amount}</strong>
+                        <strong style={{ color: "#10B981" }}>{order.amount.toLocaleString('vi-VN')} đ</strong>
                       </td>
                       <td className="td">
                         <span className="badge" style={{ backgroundColor: getStatusColor(order.status), color: "#fff" }}>
                           {order.status}
                         </span>
                       </td>
-                      <td className="td">{order.date}</td>
                     </tr>
                   ))}
+                  {getRecentOrders().length === 0 && (
+                    <tr className="table-row">
+                      <td colSpan="4" className="td" style={{textAlign: 'center'}}>Chưa có đơn hàng nào</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -171,43 +161,27 @@ export default function Dashboard() {
 
           <div className="card">
             <div className="card-header">
-              <h2 className="card-title">Sản Phẩm Bán Chạy Nhất</h2>
-              <button type="button" className="card-link">Xem tất cả →</button>
+              <h2 className="card-title">Sản Phẩm Đang Theo Dõi (Ít Kho)</h2>
+              <button type="button" className="card-link" onClick={() => window.location.href='/products'}>Xem tất cả →</button>
             </div>
             <div className="product-list">
-              {topProducts.map((product, index) => (
-                <div key={product.id} className="product-item">
+              {getTopProducts().map((product, index) => (
+                <div key={product._id} className="product-item">
                   <div className="product-rank">{index + 1}</div>
                   <div className="product-info">
                     <h4 className="product-name">{product.name}</h4>
-                    <p className="product-sales">{product.sales} bán hàng</p>
+                    <p className="product-sales">Còn {product.stock} sản phẩm</p>
                   </div>
-                  <div className="product-revenue">{product.revenue}</div>
+                  <div className="product-revenue">{product.price.toLocaleString('vi-VN')} đ</div>
                 </div>
               ))}
+              {getTopProducts().length === 0 && (
+                <div style={{textAlign: 'center', color: '#6b7280', padding: '20px'}}>Chưa có sản phẩm nào</div>
+              )}
             </div>
-          </div>
-        </div>
-
-        <div className="card summary-card">
-          <h2 className="card-title">Hành Động Nhanh</h2>
-          <div className="actions-grid">
-            <button className="action-btn">
-              <span className="action-icon">➕</span>
-              <span>Tạo Đơn Hàng</span>
-            </button>
-            <button className="action-btn">
-              <span className="action-icon">👥</span>
-              <span>Thêm Khách Hàng</span>
-            </button>
-            <button className="action-btn">
-              <span className="action-icon">📊</span>
-              <span>Xem Báo Cáo</span>
-            </button>
           </div>
         </div>
       </div>
     </AdminLayout>
   );
 }
-

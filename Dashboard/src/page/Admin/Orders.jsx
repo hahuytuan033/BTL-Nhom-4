@@ -1,54 +1,25 @@
 import AdminLayout from "../../component/Adminlayout";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function Orders() {
-  const [orders, setOrders] = useState([
-    {
-      id: 1,
-      orderNumber: "#ORD-2024-001",
-      customer: "Nguyễn Văn A",
-      amount: "1.5M",
-      status: "Hoàn thành",
-      date: "2024-05-08",
-      items: 3
-    },
-    {
-      id: 2,
-      orderNumber: "#ORD-2024-002",
-      customer: "Trần Thị B",
-      amount: "2.3M",
-      status: "Đang xử lý",
-      date: "2024-05-07",
-      items: 5
-    },
-    {
-      id: 3,
-      orderNumber: "#ORD-2024-003",
-      customer: "Lê Văn C",
-      amount: "890K",
-      status: "Chờ xác nhận",
-      date: "2024-05-07",
-      items: 2
-    },
-    {
-      id: 4,
-      orderNumber: "#ORD-2024-004",
-      customer: "Phạm Thị D",
-      amount: "3.2M",
-      status: "Hoàn thành",
-      date: "2024-05-06",
-      items: 4
-    },
-    {
-      id: 5,
-      orderNumber: "#ORD-2024-005",
-      customer: "Đặng Văn E",
-      amount: "1.8M",
-      status: "Đang giao",
-      date: "2024-05-06",
-      items: 1
-    }
-  ]);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/orders`);
+        setOrders(data);
+        setLoading(false);
+      } catch (err) {
+        setError('Không thể tải dữ liệu đơn hàng');
+        setLoading(false);
+      }
+    };
+    fetchOrders();
+  }, []);
 
   const [selectedStatus, setSelectedStatus] = useState("Tất cả");
   const statuses = ["Tất cả", "Chờ xác nhận", "Đang xử lý", "Đang giao", "Hoàn thành"];
@@ -72,11 +43,17 @@ export default function Orders() {
     }
   };
 
-  const handleStatusChange = (orderId, newStatus) => {
-    setOrders(orders.map(order =>
-      order.id === orderId ? { ...order, status: newStatus } : order
-    ));
+  const handleStatusChange = async (orderId, newStatus) => {
+    try {
+      const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/orders/${orderId}/status`, { status: newStatus });
+      setOrders(orders.map(order => order._id === orderId ? data : order));
+    } catch (err) {
+      alert("Lỗi khi cập nhật trạng thái đơn hàng");
+    }
   };
+
+  if (loading) return <AdminLayout><div className="page-container">Đang tải...</div></AdminLayout>;
+  if (error) return <AdminLayout><div className="page-container">{error}</div></AdminLayout>;
 
   return (
     <AdminLayout>
@@ -108,13 +85,13 @@ export default function Orders() {
                   <th className="th">Số Lượng</th>
                   <th className="th">Số Tiền</th>
                   <th className="th">Trạng Thái</th>
-                  <th className="th">Ngày</th>
+                  <th className="th">Ngày Tạo</th>
                   <th className="th">Hành Động</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredOrders.map((order) => (
-                  <tr key={order.id} className="table-row">
+                  <tr key={order._id} className="table-row">
                     <td className="td">
                       <span className="order-number">{order.orderNumber}</span>
                     </td>
@@ -123,7 +100,7 @@ export default function Orders() {
                       <span className="item-count">{order.items} sản phẩm</span>
                     </td>
                     <td className="td">
-                      <strong style={{ color: "var(--success)" }}>{order.amount}</strong>
+                      <strong style={{ color: "var(--success)" }}>{order.amount.toLocaleString('vi-VN')} đ</strong>
                     </td>
                     <td className="td">
                       <span
@@ -136,19 +113,19 @@ export default function Orders() {
                         {order.status}
                       </span>
                     </td>
-                    <td className="td">{order.date}</td>
+                    <td className="td">{new Date(order.createdAt).toLocaleDateString('vi-VN')}</td>
                     <td className="td">
                       <button type="button" className="view-btn">👁️ Xem</button>
                       {order.status !== "Hoàn thành" && (
                         <select
                           value={order.status}
-                          onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                          onChange={(e) => handleStatusChange(order._id, e.target.value)}
                           className="status-select"
                         >
-                          <option>Chờ xác nhận</option>
-                          <option>Đang xử lý</option>
-                          <option>Đang giao</option>
-                          <option>Hoàn thành</option>
+                          <option value="Chờ xác nhận">Chờ xác nhận</option>
+                          <option value="Đang xử lý">Đang xử lý</option>
+                          <option value="Đang giao">Đang giao</option>
+                          <option value="Hoàn thành">Hoàn thành</option>
                         </select>
                       )}
                     </td>
@@ -181,4 +158,3 @@ export default function Orders() {
     </AdminLayout>
   );
 }
-

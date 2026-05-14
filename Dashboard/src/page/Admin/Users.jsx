@@ -1,69 +1,44 @@
 import AdminLayout from "../../component/Adminlayout";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function Users() {
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      name: "Nguyễn Văn A",
-      email: "nguyenvana@example.com",
-      phone: "0901234567",
-      role: "Khách hàng",
-      status: "Hoạt động",
-      joinDate: "2024-01-15"
-    },
-    {
-      id: 2,
-      name: "Trần Thị B",
-      email: "tranthib@example.com",
-      phone: "0901234568",
-      role: "Khách hàng VIP",
-      status: "Hoạt động",
-      joinDate: "2024-02-20"
-    },
-    {
-      id: 3,
-      name: "Lê Văn C",
-      email: "levanc@example.com",
-      phone: "0901234569",
-      role: "Khách hàng",
-      status: "Không hoạt động",
-      joinDate: "2024-03-10"
-    },
-    {
-      id: 4,
-      name: "Phạm Thị D",
-      email: "phamthid@example.com",
-      phone: "0901234570",
-      role: "Quản lý",
-      status: "Hoạt động",
-      joinDate: "2023-12-05"
-    },
-    {
-      id: 5,
-      name: "Đặng Văn E",
-      email: "dangvane@example.com",
-      phone: "0901234571",
-      role: "Khách hàng",
-      status: "Hoạt động",
-      joinDate: "2024-04-22"
-    }
-  ]);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/users`);
+        setUsers(data);
+        setLoading(false);
+      } catch (err) {
+        setError('Không thể tải dữ liệu người dùng');
+        setLoading(false);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   const [selectedRole, setSelectedRole] = useState("Tất cả");
-  const roles = ["Tất cả", "Khách hàng", "Khách hàng VIP", "Quản lý"];
+  const roles = ["Tất cả", "user", "admin"];
 
   const filteredUsers = selectedRole === "Tất cả"
     ? users
     : users.filter(user => user.role === selectedRole);
 
-  const handleStatusChange = (userId) => {
-    setUsers(users.map(user =>
-      user.id === userId
-        ? { ...user, status: user.status === "Hoạt động" ? "Không hoạt động" : "Hoạt động" }
-        : user
-    ));
+  const handleStatusChange = async (userId) => {
+    try {
+      const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/users/${userId}/status`);
+      setUsers(users.map(user => user._id === userId ? data : user));
+    } catch (err) {
+      alert("Lỗi khi cập nhật trạng thái");
+    }
   };
+
+  if (loading) return <AdminLayout><div className="page-container">Đang tải...</div></AdminLayout>;
+  if (error) return <AdminLayout><div className="page-container">{error}</div></AdminLayout>;
 
   return (
     <AdminLayout>
@@ -80,7 +55,7 @@ export default function Users() {
               className={`filter-btn${selectedRole === role ? " active" : ""}`}
               onClick={() => setSelectedRole(role)}
             >
-              {role}
+              {role === 'user' ? 'Khách hàng' : role === 'admin' ? 'Quản lý' : 'Tất cả'}
             </button>
           ))}
         </div>
@@ -90,10 +65,8 @@ export default function Users() {
             <table className="table">
               <thead className="table-header">
                 <tr className="table-row">
-                  <th className="th">ID</th>
                   <th className="th">Họ Tên</th>
                   <th className="th">Email</th>
-                  <th className="th">Điện Thoại</th>
                   <th className="th">Vai Trò</th>
                   <th className="th">Trạng Thái</th>
                   <th className="th">Ngày Tham Gia</th>
@@ -102,50 +75,47 @@ export default function Users() {
               </thead>
               <tbody>
                 {filteredUsers.map((user) => (
-                  <tr key={user.id} className="table-row">
-                    <td className="td">{user.id}</td>
+                  <tr key={user._id} className="table-row">
                     <td className="td">
                       <div className="user-info">
-                        <div className="user-avatar">{user.name.charAt(0)}</div>
-                        <strong>{user.name}</strong>
+                        <div className="user-avatar">{user.fullName ? user.fullName.charAt(0) : 'U'}</div>
+                        <strong>{user.fullName}</strong>
                       </div>
                     </td>
                     <td className="td">
                       <span className="email">{user.email}</span>
                     </td>
-                    <td className="td">{user.phone}</td>
                     <td className="td">
                       <span
                         className="role-badge"
                         style={{
-                          backgroundColor: user.role === "Quản lý" ? "#EDE9FE" : "#DBEAFE",
-                          color: user.role === "Quản lý" ? "#7C3AED" : "#0284C7"
+                          backgroundColor: user.role === "admin" ? "#EDE9FE" : "#DBEAFE",
+                          color: user.role === "admin" ? "#7C3AED" : "#0284C7"
                         }}
                       >
-                        {user.role}
+                        {user.role === 'admin' ? 'Quản lý' : 'Khách hàng'}
                       </span>
                     </td>
                     <td className="td">
                       <span
                         className="status-badge"
                         style={{
-                          backgroundColor: user.status === "Hoạt động" ? "#DCFCE7" : "#FEE2E2",
-                          color: user.status === "Hoạt động" ? "#15803D" : "#991B1B"
+                          backgroundColor: user.status === "active" ? "#DCFCE7" : "#FEE2E2",
+                          color: user.status === "active" ? "#15803D" : "#991B1B"
                         }}
                       >
-                        {user.status}
+                        {user.status === 'active' ? 'Hoạt động' : 'Khóa'}
                       </span>
                     </td>
-                    <td className="td">{user.joinDate}</td>
+                    <td className="td">{new Date(user.createdAt).toLocaleDateString('vi-VN')}</td>
                     <td className="td">
-                      <button type="button" className="edit-btn">✏️ Sửa</button>
                       <button
                         type="button"
                         className="status-btn"
-                        style={{ backgroundColor: user.status === "Hoạt động" ? "#EF4444" : "#10B981" }}
-                        onClick={() => handleStatusChange(user.id)}
+                        style={{ backgroundColor: user.status === "active" ? "#EF4444" : "#10B981" }}
+                        onClick={() => handleStatusChange(user._id)}
                       >
-                        {user.status === "Hoạt động" ? "🔒 Khóa" : "🔓 Mở"}
+                        {user.status === "active" ? "🔒 Khóa" : "🔓 Mở"}
                       </button>
                     </td>
                   </tr>
@@ -161,15 +131,15 @@ export default function Users() {
             <div className="stat-label">Tổng Người Dùng</div>
           </div>
           <div className="stat-box">
-            <div className="stat-number">{users.filter(u => u.status === "Hoạt động").length}</div>
+            <div className="stat-number">{users.filter(u => u.status === "active").length}</div>
             <div className="stat-label">Hoạt Động</div>
           </div>
           <div className="stat-box">
-            <div className="stat-number">{users.filter(u => u.role === "Khách hàng VIP").length}</div>
-            <div className="stat-label">Khách Hàng VIP</div>
+            <div className="stat-number">{users.filter(u => u.role === "user").length}</div>
+            <div className="stat-label">Khách Hàng</div>
           </div>
           <div className="stat-box">
-            <div className="stat-number">{users.filter(u => u.role === "Quản lý").length}</div>
+            <div className="stat-number">{users.filter(u => u.role === "admin").length}</div>
             <div className="stat-label">Quản Lý</div>
           </div>
         </div>

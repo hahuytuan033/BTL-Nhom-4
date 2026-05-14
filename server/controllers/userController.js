@@ -46,6 +46,36 @@ exports.registerUser = async (req, res) => {
     }
 };
 
+// @desc    Lấy danh sách người dùng (Cho Dashboard)
+// @route   GET /api/users
+exports.getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find({}).select('-password').sort({ createdAt: -1 });
+        res.json(users);
+    } catch (error) {
+        console.error('❌ Error:', error);
+        res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+};
+
+// @desc    Cập nhật trạng thái người dùng (Mở/Khóa)
+// @route   PUT /api/users/:id/status
+exports.updateUserStatus = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (user) {
+            user.status = user.status === 'active' ? 'inactive' : 'active';
+            const updatedUser = await user.save();
+            res.json(updatedUser);
+        } else {
+            res.status(404).json({ message: 'Không tìm thấy người dùng' });
+        }
+    } catch (error) {
+        console.error('❌ Error:', error);
+        res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+};
+
 // @desc    Đăng nhập người dùng
 // @route   POST /api/users/login
 exports.loginUser = async (req, res) => {
