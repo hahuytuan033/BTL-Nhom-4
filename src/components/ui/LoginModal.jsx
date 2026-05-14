@@ -34,6 +34,12 @@ const LoginModal = ({ isOpen, onClose }) => {
     setLoading(true);
     setError('');
 
+    if (!isLoginMode && !formData.email.toLowerCase().endsWith('@gmail.com')) {
+      setError('Vui lòng sử dụng tài khoản Gmail (@gmail.com)');
+      setLoading(false);
+      return;
+    }
+
     if (!isLoginMode && formData.password !== formData.confirmPassword) {
       setError('Mật khẩu xác nhận không khớp');
       setLoading(false);

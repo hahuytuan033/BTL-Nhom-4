@@ -14,6 +14,11 @@ exports.registerUser = async (req, res) => {
     try {
         const { fullName, email, password } = req.body;
 
+        // Kiểm tra định dạng Gmail
+        if (!email.toLowerCase().endsWith('@gmail.com')) {
+            return res.status(400).json({ message: 'Vui lòng sử dụng tài khoản Gmail (@gmail.com)' });
+        }
+
         const userExists = await User.findOne({ email });
 
         if (userExists) {
