@@ -12,6 +12,22 @@ exports.getOrders = async (req, res) => {
     }
 };
 
+// @desc    Lấy danh sách đơn hàng của người dùng
+// @route   GET /api/orders/myorders?email=...
+exports.getUserOrders = async (req, res) => {
+    try {
+        const email = req.query.email;
+        if (!email) {
+            return res.status(400).json({ message: 'Email là bắt buộc' });
+        }
+        const orders = await Order.find({ userEmail: email }).sort({ createdAt: -1 });
+        res.json(orders);
+    } catch (error) {
+        console.error('❌ Error:', error);
+        res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+};
+
 // @desc    Cập nhật trạng thái đơn hàng
 // @route   PUT /api/orders/:id/status
 exports.updateOrderStatus = async (req, res) => {

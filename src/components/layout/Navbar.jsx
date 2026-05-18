@@ -5,7 +5,7 @@ import { Search, Menu, User, ShoppingBag } from 'lucide-react';
  * Thanh điều hướng chính
  * Có hiệu ứng trong suốt khi ở đầu trang, đổi nền khi scroll
  */
-const Navbar = ({ onUserClick }) => {
+const Navbar = ({ onUserClick, user, onLogout }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -48,12 +48,35 @@ const Navbar = ({ onUserClick }) => {
           </nav>
           
           <div className="flex items-center gap-4 md:gap-5">
-            <div 
-              className="cursor-pointer p-2 hover:bg-zinc-800 rounded-full transition-all group"
-              onClick={onUserClick}
-            >
-              <User className="group-hover:text-[#95c0a4] transition-colors" size={22} />
+            <div className="relative group">
+              <div 
+                className="cursor-pointer p-2 hover:bg-zinc-800 rounded-full transition-all"
+                onClick={!user ? onUserClick : undefined}
+              >
+                <User className="group-hover:text-[#95c0a4] transition-colors" size={22} />
+              </div>
+
+              {/* User Dropdown */}
+              {user && (
+                <div className="absolute right-0 top-full mt-2 w-48 bg-[#0a0a0a] border border-zinc-800 rounded-sm shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-right z-50">
+                  <div className="p-3 border-b border-zinc-800">
+                    <p className="text-white font-bold text-sm truncate">{user.fullName}</p>
+                    <p className="text-zinc-500 text-xs truncate">{user.email}</p>
+                  </div>
+                  <div className="p-2 space-y-1">
+                    <button onClick={() => onUserClick('profile')} className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-900 rounded-sm transition-colors">Profile</button>
+                    <button onClick={() => onUserClick('buying')} className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-900 rounded-sm transition-colors">Buying</button>
+                    <button onClick={() => onUserClick('favorites')} className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-900 rounded-sm transition-colors">Favorites</button>
+                    <button onClick={() => onUserClick('wallet')} className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-900 rounded-sm transition-colors">Wallet</button>
+                    <button onClick={() => onUserClick('settings')} className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-900 rounded-sm transition-colors">Setting</button>
+                  </div>
+                  <div className="p-2 border-t border-zinc-800">
+                    <button onClick={onLogout} className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-500/10 rounded-sm transition-colors font-bold">Logout</button>
+                  </div>
+                </div>
+              )}
             </div>
+            
             <div className="relative p-2 hover:bg-zinc-800 rounded-full transition-all group cursor-pointer">
               <ShoppingBag className="group-hover:text-[#95c0a4] transition-colors" size={22} />
               <span className="absolute top-1 right-1 bg-[#95c0a4] text-black text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-black">2</span>
