@@ -100,3 +100,46 @@ exports.loginUser = async (req, res) => {
         res.status(500).json({ message: 'Lỗi server', error: error.message });
     }
 };
+
+// @desc    Lấy danh sách yêu thích
+// @route   GET /api/users/wishlist?email=...
+exports.getWishlist = async (req, res) => {
+    try {
+        const email = req.query.email;
+        const user = await User.findOne({ email }).populate('wishlist');
+        if (user) {
+            res.json(user.wishlist);
+        } else {
+            res.status(404).json({ message: 'Không tìm thấy người dùng' });
+        }
+    } catch (error) {
+        console.error('❌ Error:', error);
+        res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+};
+
+// @desc    Thêm/Xóa sản phẩm khỏi danh sách yêu thích
+// @route   POST /api/users/wishlist/toggle
+exports.toggleWishlist = async (req, res) => {
+    try {
+        const { email, productId } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'Không tìm thấy người dùng' });
+        }
+
+        const index = user.wishlist.indexOf(productId);
+        if (index > -1) {
+            user.wishlist.splice(index, 1);
+        } else {
+            user.wishlist.push(productId);
+        }
+
+        await user.save();
+        const updatedUser = await User.findOne({ email }).populate('wishlist');
+        res.json(updatedUser.wishlist);
+    } catch (error) {
+        console.error('❌ Error:', error);
+        res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+};

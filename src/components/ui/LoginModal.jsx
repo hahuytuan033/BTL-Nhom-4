@@ -8,7 +8,7 @@ const socialLogins = [
   { name: 'Twitter', isIconComponent: true }
 ];
 
-const LoginModal = ({ isOpen, onClose }) => {
+const LoginModal = ({ isOpen, onClose, setUser }) => {
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -64,8 +64,10 @@ const LoginModal = ({ isOpen, onClose }) => {
         if (!isLoginMode) {
           setIsSuccess(true);
         } else {
-          // Lưu token và thông tin user (tùy chọn)
+          // Lưu token và thông tin user
           localStorage.setItem('userToken', data.token);
+          localStorage.setItem('user', JSON.stringify(data));
+          if (setUser) setUser(data);
           alert('Đăng nhập thành công!');
           onClose();
         }

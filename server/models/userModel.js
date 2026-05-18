@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema({
     provider: { type: String, default: 'local' }, // 'local', 'google', etc.
     providerId: { type: String },
     avatar: { type: String },
+    wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
     createdAt: { type: Date, default: Date.now }
 });
 

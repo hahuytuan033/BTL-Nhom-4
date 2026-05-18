@@ -13,14 +13,41 @@ import PartnersSection from './components/sections/PartnersSection';
 
 // UI
 import LoginModal from './components/ui/LoginModal';
+import UserProfile from './components/ui/UserProfile';
 
 // Data
 import { shoeData } from './data/products';
 
 export default function App() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [initialProfileTab, setInitialProfileTab] = useState('profile');
+  const [user, setUser] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        console.error('Error parsing user data:', e);
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('user');
+    setUser(null);
+    setIsProfileOpen(false);
+  };
+
+  const openProfile = (tab = 'profile') => {
+    setInitialProfileTab(tab);
+    setIsProfileOpen(true);
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -56,8 +83,15 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#000000] text-[#fafafa] font-sans selection:bg-[#95c0a4] selection:text-black">
-      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
-      <Navbar onLoginClick={() => setIsLoginOpen(true)} />
+      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} setUser={setUser} />
+      <UserProfile 
+        isOpen={isProfileOpen} 
+        onClose={() => setIsProfileOpen(false)} 
+        user={user} 
+        onLogout={handleLogout} 
+        initialTab={initialProfileTab}
+      />
+      <Navbar onUserClick={(tab) => user ? openProfile(tab) : setIsLoginOpen(true)} user={user} onLogout={handleLogout} />
 
       <main className="pt-24 pb-24 max-w-[1600px] mx-auto px-4 md:px-10">
         <HeroSection />
