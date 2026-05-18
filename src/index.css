@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* Tùy chỉnh thanh cuộn cho giao diện Dark Mode bóng bẩy hơn */
 ::-webkit-scrollbar {
   width: 8px;
 }

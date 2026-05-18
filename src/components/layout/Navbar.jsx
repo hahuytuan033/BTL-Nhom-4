@@ -5,7 +5,7 @@ import { Search, Menu, User, ShoppingBag } from 'lucide-react';
  * Thanh điều hướng chính
  * Có hiệu ứng trong suốt khi ở đầu trang, đổi nền khi scroll
  */
-const Navbar = ({ onLoginClick }) => {
+const Navbar = ({ onUserClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -50,7 +50,7 @@ const Navbar = ({ onLoginClick }) => {
           <div className="flex items-center gap-4 md:gap-5">
             <div 
               className="cursor-pointer p-2 hover:bg-zinc-800 rounded-full transition-all group"
-              onClick={onLoginClick}
+              onClick={onUserClick}
             >
               <User className="group-hover:text-[#95c0a4] transition-colors" size={22} />
             </div>
