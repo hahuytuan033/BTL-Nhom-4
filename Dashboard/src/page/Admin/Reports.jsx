@@ -1,51 +1,58 @@
 import AdminLayout from "../../component/Adminlayout";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function Reports() {
-  const [reports] = useState([
-    {
-      id: 1,
-      title: "Báo Cáo Doanh Thu Tháng 5",
-      type: "Doanh Thu",
-      date: "2024-05-08",
-      status: "Hoàn thành"
-    },
-    {
-      id: 2,
-      title: "Báo Cáo Bán Hàng Hàng Tuần",
-      type: "Bán Hàng",
-      date: "2024-05-07",
-      status: "Hoàn thành"
-    },
-    {
-      id: 3,
-      title: "Báo Cáo Khách Hàng Mới",
-      type: "Khách Hàng",
-      date: "2024-05-06",
-      status: "Hoàn thành"
-    },
-    {
-      id: 4,
-      title: "Báo Cáo Tồn Kho",
-      type: "Kho Hàng",
-      date: "2024-05-05",
-      status: "Đang xử lý"
-    }
-  ]);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [reportMetrics] = useState([
-    { label: "Tổng Doanh Thu", value: "2.5 Tỷ", icon: "💰", color: "#10B981" },
-    { label: "Tổng Đơn Hàng", value: "1,248", icon: "📊", color: "#3B82F6" },
-    { label: "Tổng Khách Hàng", value: "856", icon: "👥", color: "#F59E0B" },
-    { label: "Tỷ Lệ Chuyển Đổi", value: "8.5%", icon: "📈", color: "#8B5CF6" }
-  ]);
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/orders`);
+        setOrders(data);
+        setLoading(false);
+      } catch (err) {
+        console.error("Lỗi khi tải dữ liệu đơn hàng", err);
+        setLoading(false);
+      }
+    };
+    fetchOrders();
+  }, []);
+
+  const completedOrders = orders.filter(o => o.status === "Hoàn thành");
+  const totalRevenue = completedOrders.reduce((sum, o) => sum + o.amount, 0);
+
+  const getMonthlyRevenue = () => {
+    const revenueByMonth = new Array(6).fill(0);
+    const now = new Date();
+    completedOrders.forEach(o => {
+      const date = new Date(o.createdAt);
+      const monthDiff = (now.getFullYear() - date.getFullYear()) * 12 + (now.getMonth() - date.getMonth());
+      if (monthDiff >= 0 && monthDiff < 6) {
+        revenueByMonth[5 - monthDiff] += o.amount;
+      }
+    });
+    return revenueByMonth;
+  };
+
+  const monthlyRevenue = getMonthlyRevenue();
+  const maxRevenue = Math.max(...monthlyRevenue, 1);
+
+  const reportMetrics = [
+    { label: "Tổng Doanh Thu", value: `${(totalRevenue / 1000000).toFixed(1)}M đ`, icon: "💰", color: "#10B981" },
+    { label: "Tổng Đơn Hàng", value: completedOrders.length, icon: "📊", color: "#3B82F6" },
+    { label: "Đơn Đang Xử Lý", value: orders.filter(o => o.status === "Đang xử lý").length, icon: "📦", color: "#F59E0B" },
+    { label: "Đơn Chờ", value: orders.filter(o => o.status === "Chờ xác nhận").length, icon: "🕒", color: "#8B5CF6" }
+  ];
+
+  if (loading) return <AdminLayout><div className="page-container">Đang tải báo cáo...</div></AdminLayout>;
 
   return (
     <AdminLayout>
       <div className="page-container">
         <div className="section-header">
           <h1 className="section-title">Báo Cáo & Thống Kê</h1>
-          <button type="button" className="export-btn">📥 Xuất Báo Cáo</button>
         </div>
 
         <div className="metrics-grid">
@@ -62,86 +69,14 @@ export default function Reports() {
 
         <div className="charts-grid">
           <div className="card">
-            <h3 className="card-title">Doanh Thu Hàng Tháng</h3>
+            <h3 className="card-title">Doanh Thu 6 Tháng Gần Đây</h3>
             <div className="chart-placeholder">
               <div className="bar-chart">
-                <div className="bar" style={{ height: "60%" }}></div>
-                <div className="bar" style={{ height: "75%" }}></div>
-                <div className="bar" style={{ height: "90%" }}></div>
-                <div className="bar" style={{ height: "70%" }}></div>
-                <div className="bar" style={{ height: "80%" }}></div>
-                <div className="bar" style={{ height: "95%" }}></div>
+                {monthlyRevenue.map((rev, i) => (
+                  <div key={i} className="bar" style={{ height: `${(rev / maxRevenue) * 100}%` }} title={`${rev.toLocaleString()} đ`}></div>
+                ))}
               </div>
-              <p className="chart-label">Tháng 1 - Tháng 6</p>
-            </div>
-          </div>
-
-          <div className="card">
-            <h3 className="card-title">Phân Bố Danh Mục</h3>
-            <div className="pie-chart">
-              <div className="pie-sector" style={{ width: "30%", backgroundColor: "#3B82F6" }}></div>
-              <div className="pie-sector" style={{ width: "25%", backgroundColor: "#10B981" }}></div>
-              <div className="pie-sector" style={{ width: "20%", backgroundColor: "#F59E0B" }}></div>
-              <div className="pie-sector" style={{ width: "15%", backgroundColor: "#8B5CF6" }}></div>
-              <div className="pie-sector" style={{ width: "10%", backgroundColor: "#EF4444" }}></div>
-            </div>
-            <div className="legend-grid">
-              <p className="legend"><span style={{ background: "#3B82F6" }}></span> Điện Tử: 30%</p>
-              <p className="legend"><span style={{ background: "#10B981" }}></span> Điện Thoại: 25%</p>
-              <p className="legend"><span style={{ background: "#F59E0B" }}></span> Áo Quần: 20%</p>
-              <p className="legend"><span style={{ background: "#8B5CF6" }}></span> Phụ Kiện: 15%</p>
-              <p className="legend"><span style={{ background: "#EF4444" }}></span> Khác: 10%</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="card">
-          <h3 className="card-title">Các Báo Cáo Gần Đây</h3>
-          <div className="reports-list">
-            {reports.map((report) => (
-              <div key={report.id} className="report-item">
-                <div className="report-info">
-                  <h4 className="report-title">{report.title}</h4>
-                  <p className="report-meta">
-                    <span className="report-type">{report.type}</span>
-                    <span className="report-date">{report.date}</span>
-                  </p>
-                </div>
-                <div className="report-actions">
-                  <span
-                    className="report-status"
-                    style={{
-                      backgroundColor: report.status === "Hoàn thành" ? "#DCFCE7" : "#FEF3C7",
-                      color: report.status === "Hoàn thành" ? "#15803D" : "#92400E"
-                    }}
-                  >
-                    {report.status}
-                  </span>
-                  <button type="button" className="download-btn">📥 Tải</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="summary-card">
-          <h3 className="card-title">Tóm Tắt Hiệu Suất</h3>
-          <div className="summary-grid">
-            <div className="summary-item">
-              <span className="summary-label">Tăng Trưởng Doanh Thu</span>
-              <span className="summary-value" style={{ color: "#10B981" }}>+24.5%</span>
-            </div>
-            <div className="summary-item">
-              <span className="summary-label">Tăng Trưởng Khách Hàng</span>
-              <span className="summary-value" style={{ color: "#3B82F6" }}>+15.2%</span>
-            </div>
-            <div className="summary-item">
-              <span className="summary-label">Tỷ Lệ Giữ Chân Khách</span>
-              <span className="summary-value" style={{ color: "#F59E0B" }}>87.3%</span>
-            </div>
-            <div className="summary-item">
-              <span className="summary-label">Đơn Hàng Bình Quân</span>
-              <span className="summary-value" style={{ color: "#8B5CF6" }}>1.95M</span>
+              <p className="chart-label">6 tháng gần nhất</p>
             </div>
           </div>
         </div>
