@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function Navbar() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -40,7 +42,8 @@ export default function Navbar() {
   };
 
   const handleLogout = () => {
-    console.log("Logged out");
+    localStorage.removeItem("isAuthenticated");
+    navigate("/login");
   };
 
   return (
