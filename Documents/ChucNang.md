@@ -1,71 +1,41 @@
-👤 1. Phân hệ Khách hàng (Customer Storefront)
-Quản lý Tài khoản (Authentication):
+# DANH SÁCH CHỨC NĂNG HỆ THỐNG
 
-Đăng ký và đăng nhập bằng hệ thống Username/Password truyền thống để bảo mật và quản lý luồng dữ liệu độc lập.
+## 👤 1. Phân hệ Khách hàng (Customer Storefront)
 
-Quản lý thông tin cá nhân (địa chỉ giao hàng mặc định, số điện thoại).
+### Quản lý Tài khoản & Xác thực:
+- **Đăng ký:** Tạo tài khoản mới, yêu cầu email định dạng Gmail (@gmail.com).
+- **Đăng nhập:** Đăng nhập an toàn với JWT (JSON Web Token).
+- **Hồ sơ cá nhân (User Profile):** Quản lý thông tin họ tên, email, tên người dùng, địa chỉ giao hàng và tùy chọn kích thước (giày/quần áo).
 
-Trưng bày & Tìm kiếm Sản phẩm:
+### Trải nghiệm Mua sắm:
+- **Trang chủ:** Banner Hero chuyên nghiệp, danh mục sản phẩm trực quan, đề xuất sản phẩm và hàng mới về.
+- **Tìm kiếm:** Thanh tìm kiếm trung tâm giúp tìm nhanh sản phẩm theo tên, thương hiệu.
+- **Xem sản phẩm:** Hiển thị thông tin sản phẩm (tên, giá, thương hiệu, lượt bán) kèm hình ảnh từ Cloudinary.
+- **Yêu thích (Wishlist):** Thêm/Xóa sản phẩm vào danh sách yêu thích cá nhân.
+- **Lịch sử đơn hàng:** Xem danh sách các đơn hàng đã đặt và theo dõi trạng thái hiện tại.
 
-Trang chủ: Hiển thị các danh mục nổi bật, sản phẩm mới ra mắt, sản phẩm bán chạy.
+---
 
-Tìm kiếm và Lọc thông minh: Tính năng bắt buộc phải có cho web bán giày. Phải cho phép khách hàng lọc theo Kích cỡ (Size), Màu sắc, Thương hiệu, Mức giá, và Giới tính (Nam/Nữ/Unisex).
+## ⚙️ 2. Phân hệ Quản trị viên (Admin Dashboard)
 
-Chi tiết Sản phẩm (Product Detail):
+### Bảng Điều khiển (Dashboard):
+- **Thống kê tổng hợp:** Tổng số sản phẩm, đơn hàng, khách hàng và tổng doanh thu.
+- **Thông báo thời gian thực:** Nhận thông báo mới nhất về khách hàng đăng ký và đơn hàng mới đặt.
+- **Theo dõi kho hàng:** Hiển thị các sản phẩm sắp hết hàng để Admin kịp thời bổ sung.
 
-Hiển thị hình ảnh trực quan (nhiều góc độ của giày).
+### Quản lý Sản phẩm:
+- **Danh sách sản phẩm:** Xem thông tin chi tiết toàn bộ sản phẩm trong hệ thống.
+- **Thêm sản phẩm:** Nhập thông tin và upload hình ảnh trực tiếp lên Cloudinary.
+- **Xóa sản phẩm:** Loại bỏ sản phẩm không còn kinh doanh khỏi hệ thống.
 
-Lựa chọn biến thể: Chọn Size và Màu sắc tương ứng (hệ thống cần kiểm tra xem size đó còn hàng hay không).
+### Quản lý Đơn hàng:
+- **Theo dõi đơn hàng:** Xem danh sách đơn hàng kèm mã đơn, khách hàng, số lượng và tổng tiền.
+- **Cập nhật trạng thái:** Chuyển đổi trạng thái đơn hàng (Chờ xác nhận -> Đang xử lý -> Đang giao -> Hoàn thành).
 
-Mô tả chi tiết và bảng hướng dẫn chọn size (Size chart).
+### Quản lý Khách hàng:
+- **Danh sách người dùng:** Xem thông tin khách hàng, vai trò (Admin/User) và ngày tham gia.
+- **Kiểm soát trạng thái:** Khóa hoặc mở khóa tài khoản khách hàng để đảm bảo an ninh hệ thống.
 
-Quản lý Giỏ hàng (Shopping Cart):
-
-Thêm/xóa sản phẩm, cập nhật số lượng.
-
-Tính toán tổng tiền tạm tính.
-
-Thanh toán (Checkout):
-
-Nhập thông tin giao hàng (có thể lấy tự động từ Profile).
-
-Lựa chọn phương thức thanh toán (Thanh toán khi nhận hàng - COD, hoặc tích hợp cổng thanh toán online cơ bản).
-
-Xác nhận và tạo mã đơn hàng.
-
-Lịch sử Đơn hàng (Order Tracking):
-
-Xem lại danh sách các đôi giày đã mua.
-
-Theo dõi trạng thái đơn hàng hiện tại (Chờ xác nhận -> Đang xử lý -> Đang giao -> Hoàn thành).
-
-⚙️ 2. Phân hệ Quản trị viên (Admin Dashboard)
-Bảng Điều khiển Tổng quan (Dashboard):
-
-Thống kê nhanh số lượng đơn hàng mới, tổng doanh thu, và số lượng khách hàng trong ngày/tuần/tháng.
-
-Quản lý Sản phẩm & Biến thể (Product & Variant Management):
-
-Thêm, sửa, xóa, ẩn/hiện sản phẩm giày.
-
-Quản lý Biến thể (Cực kỳ quan trọng): Một mẫu giày có thể có nhiều màu, mỗi màu có nhiều size. Hệ thống cần cho phép tạo linh hoạt các tổ hợp dữ liệu này (Ví dụ: Giày A - Màu Đen - Size 42 - Số lượng: 10).
-
-Quản lý Tồn kho (Inventory Control):
-
-Theo dõi số lượng hàng tồn của từng size/màu.
-
-Tự động trừ kho khi có đơn hàng đặt thành công và hiển thị nhãn "Hết hàng" (Out of stock) ra giao diện khách hàng.
-
-Quản lý Đơn hàng (Order Management):
-
-Xem danh sách toàn bộ đơn hàng vào hệ thống.
-
-Duyệt đơn và cập nhật luồng trạng thái vận chuyển.
-
-Hủy đơn hàng nếu cần (và hoàn lại số lượng vào kho).
-
-Quản lý Khách hàng (User Management):
-
-Xem danh sách tài khoản đăng ký.
-
-Cấp quyền quản trị (Role-based) hoặc khóa các tài khoản có dấu hiệu spam.
+### Báo cáo & Cài đặt:
+- **Thống kê doanh thu:** Biểu đồ doanh thu 6 tháng gần nhất để theo dõi hiệu quả kinh doanh.
+- **Cài đặt hệ thống:** Cấu hình tên trang web, thông tin liên hệ, múi giờ, bảo mật và thông báo.

@@ -1,24 +1,21 @@
-import AdminLayout from "../../components/AdminLayout";
+# MÔ TẢ GIAO DIỆN QUẢN TRỊ (ADMIN DASHBOARD)
 
-export default function Dashboard() {
-  return (
-    <AdminLayout>
-      <h1>Dashboard</h1>
+Giao diện quản trị được thiết kế để cung cấp cái nhìn tổng quan và các công cụ điều hành mạnh mẽ cho Admin.
 
-      <div style={{ display: "flex", gap: "20px" }}>
-        <div style={box}>Products: 100</div>
-        <div style={box}>Orders: 50</div>
-        <div style={box}>Users: 20</div>
-        <div style={box}>Revenue: 20tr</div>
-      </div>
-    </AdminLayout>
-  );
-}
+---
 
-const box = {
-  flex: 1,
-  padding: "20px",
-  background: "#fff",
-  borderRadius: "10px",
-  boxShadow: "0 2px 5px rgba(0,0,0,0.1)"
-};
+## 1. Các Chỉ số Tổng quan (Stats)
+- **Tổng sản phẩm:** Đếm toàn bộ sản phẩm đang có trong database.
+- **Đơn hàng:** Tổng số lượng đơn hàng đã được khởi tạo.
+- **Khách hàng:** Số lượng tài khoản có vai trò là `user`.
+- **Doanh thu:** Tính tổng tiền từ các đơn hàng có trạng thái "Hoàn thành".
+
+## 2. Các Biểu đồ & Danh sách theo dõi
+- **Đơn hàng gần đây:** Bảng hiển thị 5 đơn hàng mới nhất kèm trạng thái và số tiền.
+- **Sản phẩm sắp hết hàng:** Danh sách các sản phẩm có số lượng kho thấp nhất để Admin chủ động nhập hàng.
+- **Biểu đồ doanh thu:** Trực quan hóa tăng trưởng doanh thu qua các tháng (sử dụng biểu đồ cột).
+
+## 3. Chức năng chính trên Dashboard
+- **Sidebar:** Thanh điều hướng nhanh giữa các mục Quản lý sản phẩm, Đơn hàng, Khách hàng, Báo cáo và Cài đặt.
+- **Navbar:** Thanh công cụ phía trên chứa thanh tìm kiếm, thông báo thời gian thực (🔔) và menu thông tin cá nhân của Admin.
+- **Responsive:** Giao diện hỗ trợ tốt trên cả màn hình máy tính và thiết bị di động (collapsed sidebar).
