@@ -18,6 +18,8 @@ import UserProfile from './components/ui/UserProfile';
 // Data
 import { shoeData } from './data/products';
 
+import ProductQuickViewModal from './components/ui/ProductQuickViewModal';
+
 export default function App() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -25,6 +27,9 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -37,6 +42,7 @@ export default function App() {
     }
   }, []);
 
+
   const handleLogout = () => {
     localStorage.removeItem('userToken');
     localStorage.removeItem('user');
@@ -48,6 +54,49 @@ export default function App() {
     setInitialProfileTab(tab);
     setIsProfileOpen(true);
   };
+
+  const openProductDetail = (product) => {
+    setSelectedProduct(product);
+    setIsProductModalOpen(true);
+  };
+
+  const normalizePrice = (p) => {
+    if (typeof p === 'number') return p;
+    return Number(String(p).replace(/[^0-9.]/g, '')) || 0;
+  };
+
+  const addToCart = (product, size) => {
+    const current = JSON.parse(localStorage.getItem('cart') || '[]');
+    const exist = current.find((x) => String(x.id) === String(product.id));
+
+    const parsedPrice = normalizePrice(product.price);
+    const SIZE_DEFAULT = '42';
+
+    let next;
+    if (exist) {
+      next = current.map((x) =>
+        String(x.id) === String(product.id)
+          ? { ...x, qty: (Number(x.qty) || 1) + 1, size: size || x.size || SIZE_DEFAULT }
+          : x
+      );
+    } else {
+      next = [
+        ...current,
+        {
+          id: product.id,
+          title: product.title,
+          brand: product.brand,
+          price: parsedPrice,
+          image: product.image,
+          qty: 1,
+          size: size || SIZE_DEFAULT,
+        },
+      ];
+    }
+
+    localStorage.setItem('cart', JSON.stringify(next));
+  };
+
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -93,6 +142,20 @@ export default function App() {
       />
       <Navbar onUserClick={(tab) => user ? openProfile(tab) : setIsLoginOpen(true)} user={user} onLogout={handleLogout} />
 
+      <ProductQuickViewModal
+        isOpen={isProductModalOpen}
+        onClose={() => setIsProductModalOpen(false)}
+        product={selectedProduct}
+        onAddToCart={(product, size) => {
+          addToCart(product, size);
+        }}
+        onBuyNow={(product, size) => {
+          addToCart(product, size);
+          setIsProductModalOpen(false);
+          window.location.href = '/checkout';
+        }}
+      />
+
       <main className="pt-24 pb-24 max-w-[1600px] mx-auto px-4 md:px-10">
         <HeroSection />
         <CategoriesSection />
@@ -105,6 +168,7 @@ export default function App() {
               title="Đề xuất cho bạn"
               subtitle="Dựa trên phong cách và sở thích cá nhân của bạn"
               products={products.length > 0 ? products : shoeData}
+              onOpenDetail={openProductDetail}
             />
 
             <PromoBanners />
@@ -115,12 +179,14 @@ export default function App() {
               products={products.length > 0 ? [...products].reverse() : [...shoeData].reverse()}
               forceNew={true}
               keyPrefix="new-"
+              onOpenDetail={openProductDetail}
             />
           </>
         )}
 
         <PartnersSection />
       </main>
+
 
       <Footer />
     </div>
