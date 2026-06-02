@@ -14,6 +14,12 @@ const userSchema = new mongoose.Schema({
     providerId: { type: String },
     avatar: { type: String },
     wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+    cart: [{
+        productId: { type: String, required: true },
+        size: { type: String, required: true },
+        color: { type: String, required: true },
+        quantity: { type: Number, default: 1 }
+    }],
     createdAt: { type: Date, default: Date.now }
 });
 

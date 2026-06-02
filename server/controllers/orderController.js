@@ -48,3 +48,35 @@ exports.updateOrderStatus = async (req, res) => {
         res.status(500).json({ message: 'Lỗi server', error: error.message });
     }
 };
+
+// @desc    Tạo đơn hàng mới
+// @route   POST /api/orders
+exports.createOrder = async (req, res) => {
+    try {
+        const { customer, userEmail, phone, address, amount, items } = req.body;
+        
+        if (!customer || !phone || !address || !amount) {
+            return res.status(400).json({ message: 'Vui lòng điền đầy đủ tên người nhận, số điện thoại và địa chỉ giao hàng.' });
+        }
+
+        // Tạo mã đơn hàng ngẫu nhiên (Ví dụ: N4-XXXXXX)
+        const orderNumber = 'N4-' + Math.floor(100000 + Math.random() * 900000);
+
+        const order = new Order({
+            orderNumber,
+            customer,
+            userEmail,
+            phone,
+            address,
+            amount,
+            items: items || 1
+        });
+
+        await order.save();
+        res.status(201).json(order);
+    } catch (error) {
+        console.error('❌ Error:', error);
+        res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+};
+

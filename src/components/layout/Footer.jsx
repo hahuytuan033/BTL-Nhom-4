@@ -1,4 +1,4 @@
-import { Instagram, Facebook as FacebookIcon, Twitter, Github } from 'lucide-react';
+import { Instagram, Facebook, Twitter, Github } from 'lucide-react';
 import { footerServices, footerSupport } from '../../data/products';
 
 const Footer = () => (
@@ -20,7 +20,7 @@ const Footer = () => (
           <div className="flex gap-6">
             {[
               { Icon: Instagram },
-              { Icon: FacebookIcon },
+              { Icon: Facebook },
               { Icon: Twitter },
               { Icon: Github },
             ].map(({ Icon }, idx) => (
@@ -68,7 +68,7 @@ const Footer = () => (
 
       {/* Bottom bar */}
       <div className="pt-12 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-8 text-[10px] text-zinc-600 font-black uppercase tracking-[0.3em]">
-        <p>© 2026 BTL-N4 ECOSYSTEM. ALL RIGHTS RESERVED.</p>
+        <p>© 2026 HỆ SINH THÁI BTL-N4. BẢN QUYỀN ĐÃ ĐƯỢC BẢO HỘ.</p>
         <div className="flex flex-wrap justify-center gap-8">
           <span className="hover:text-white cursor-pointer transition-colors">Điều khoản</span>
           <span className="hover:text-white cursor-pointer transition-colors">Bảo mật</span>

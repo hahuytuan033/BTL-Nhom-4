@@ -12,15 +12,38 @@ import {
   Search, 
   MapPin, 
   Shield, 
-  Briefcase 
+  Briefcase,
+  ShoppingBag,
+  Minus,
+  Plus
 } from 'lucide-react';
 
-const UserProfile = ({ isOpen, onClose, user, onLogout, initialTab = 'profile' }) => {
+const UserProfile = ({ isOpen, onClose, user, onLogout, initialTab = 'profile', cart = [], onUpdateCartItemQuantity, onRemoveFromCart, onOpenCheckout }) => {
   // Trạng thái tab hiện tại
   const [activeTab, setActiveTab] = useState(initialTab);
   
   // Trạng thái hiển thị dropdown user ở header
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const [selectedItems, setSelectedItems] = useState(new Set());
+
+  useEffect(() => {
+    setSelectedItems(prev => {
+      const next = new Set(prev);
+      cart.forEach(item => {
+        if (!prev.has(item.id)) {
+          next.add(item.id);
+        }
+      });
+      const cartIds = new Set(cart.map(c => c.id));
+      for (const id of next) {
+        if (!cartIds.has(id)) {
+          next.delete(id);
+        }
+      }
+      return next;
+    });
+  }, [cart]);
   
   // Dữ liệu cá nhân (Khởi tạo từ props user)
   const [profileData, setProfileData] = useState({
@@ -165,14 +188,21 @@ const UserProfile = ({ isOpen, onClose, user, onLogout, initialTab = 'profile' }
     showToast('Đã xóa địa chỉ giao hàng.');
   };
 
+  // handleToggleFavorite
+  const handleToggleFavorite = (id) => {
+    console.log('Toggle favorite for:', id);
+    showToast('Tính năng đang được phát triển');
+  };
+
   // Menu Sidebar & Dropdown đồng bộ cấu trúc
   const menuItems = [
-    { id: 'profile', label: 'Profile', desc: 'Shipping, Email, Password, Shoe Size', icon: User },
-    { id: 'buying', label: 'Buying', desc: 'Active Bids, In-Progress, Completed Orders', icon: Package },
-    { id: 'selling', label: 'Selling', desc: 'Active Asks, Sales, Seller Profile', icon: TrendingUp },
-    { id: 'favorites', label: 'Favorites', desc: "Items and lists you've saved", icon: Heart },
-    { id: 'wallet', label: 'Wallet', desc: 'Payments, Payouts, Gift Cards, Credits', icon: CreditCard },
-    { id: 'settings', label: 'Settings', desc: 'Security and Notifications', icon: Settings },
+    { id: 'profile', label: 'Hồ sơ cá nhân', desc: 'Địa chỉ giao nhận, Email, Mật khẩu, Size giày', icon: User },
+    { id: 'cart', label: 'Giỏ hàng', desc: 'Quản lý các sản phẩm trong giỏ hàng', icon: ShoppingBag },
+    { id: 'buying', label: 'Lịch sử mua', desc: 'Đơn hàng đang đặt, Đang xử lý, Đơn hàng hoàn thành', icon: Package },
+    { id: 'selling', label: 'Lịch sử bán', desc: 'Yêu cầu đang bán, Lịch sử bán hàng, Hồ sơ người bán', icon: TrendingUp },
+    { id: 'favorites', label: 'Yêu thích', desc: 'Sản phẩm và danh sách bạn đã lưu', icon: Heart },
+    { id: 'wallet', label: 'Ví tiền', desc: 'Thanh toán, Rút tiền, Thẻ quà tặng, Số dư', icon: CreditCard },
+    { id: 'settings', label: 'Cài đặt', desc: 'Bảo mật và thông báo', icon: Settings },
   ];
 
   return (
@@ -268,7 +298,7 @@ const UserProfile = ({ isOpen, onClose, user, onLogout, initialTab = 'profile' }
                     className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-500 hover:bg-red-500/10 rounded-lg transition-colors text-left"
                   >
                     <LogOut className="w-4 h-4" />
-                    <span>Log Out</span>
+                    <span>Đăng xuất</span>
                   </button>
                 </div>
               </div>
@@ -325,7 +355,7 @@ const UserProfile = ({ isOpen, onClose, user, onLogout, initialTab = 'profile' }
                   <LogOut className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="font-bold text-sm">Log Out</p>
+                  <p className="font-bold text-sm">Đăng xuất</p>
                   <p className="text-xs text-red-400/60 mt-0.5">Thoát tài khoản an toàn</p>
                 </div>
               </button>
@@ -344,7 +374,7 @@ const UserProfile = ({ isOpen, onClose, user, onLogout, initialTab = 'profile' }
             <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-300">
               
               <div>
-                <h1 className="text-3xl font-black tracking-tight">Profile</h1>
+                <h1 className="text-3xl font-black tracking-tight">Hồ sơ cá nhân</h1>
                 <p className="text-neutral-400 text-sm mt-1">Quản lý và cập nhật thông tin cá nhân của bạn.</p>
               </div>
 
@@ -355,27 +385,27 @@ const UserProfile = ({ isOpen, onClose, user, onLogout, initialTab = 'profile' }
                     <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500">
                       <User className="w-5 h-5" />
                     </div>
-                    <h2 className="text-lg font-extrabold tracking-tight">Personal Information</h2>
+                    <h2 className="text-lg font-extrabold tracking-tight">Thông tin cá nhân</h2>
                   </div>
                   <button 
                     onClick={() => openModal('profile')}
                     className="px-4 py-1.5 text-xs font-bold rounded-full border border-white text-white hover:bg-white hover:text-black transition-all"
                   >
-                    Edit
+                    Chỉnh sửa
                   </button>
                 </div>
                 
                 <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
-                    <p className="text-xs text-neutral-500 uppercase font-bold tracking-wider mb-1">Name</p>
+                    <p className="text-xs text-neutral-500 uppercase font-bold tracking-wider mb-1">Họ và tên</p>
                     <p className="font-semibold text-base">{profileData.name}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-neutral-500 uppercase font-bold tracking-wider mb-1">Email Address</p>
+                    <p className="text-xs text-neutral-500 uppercase font-bold tracking-wider mb-1">Địa chỉ Email</p>
                     <p className="font-semibold text-base break-all">{profileData.email}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-neutral-500 uppercase font-bold tracking-wider mb-1">Username</p>
+                    <p className="text-xs text-neutral-500 uppercase font-bold tracking-wider mb-1">Tên đăng nhập</p>
                     <p className="font-semibold text-sm text-neutral-400 font-mono break-all">{profileData.username}</p>
                   </div>
                 </div>
@@ -388,20 +418,20 @@ const UserProfile = ({ isOpen, onClose, user, onLogout, initialTab = 'profile' }
                     <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500">
                       <MapPin className="w-5 h-5" />
                     </div>
-                    <h2 className="text-lg font-extrabold tracking-tight">Shipping Addresses</h2>
+                    <h2 className="text-lg font-extrabold tracking-tight">Địa chỉ giao hàng</h2>
                   </div>
                   <button 
                     onClick={() => openModal('address')}
                     className="px-4 py-1.5 text-xs font-bold rounded-full border border-white text-white hover:bg-white hover:text-black transition-all"
                   >
-                    Add
+                    Thêm mới
                   </button>
                 </div>
 
                 <div className="p-6">
                   {addresses.length === 0 ? (
                     <p className="text-sm text-neutral-500 py-2">
-                      You do not have a shipping address saved.
+                      Bạn chưa lưu địa chỉ giao hàng nào.
                     </p>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -435,33 +465,33 @@ const UserProfile = ({ isOpen, onClose, user, onLogout, initialTab = 'profile' }
                     <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500">
                       <Shield className="w-5 h-5" />
                     </div>
-                    <h2 className="text-lg font-extrabold tracking-tight">Size Preferences</h2>
+                    <h2 className="text-lg font-extrabold tracking-tight">Kích thước ưu thích</h2>
                   </div>
                   <button 
                     onClick={() => openModal('sizes')}
                     className="px-4 py-1.5 text-xs font-bold rounded-full border border-white text-white hover:bg-white hover:text-black transition-all"
                   >
-                    Edit
+                    Chỉnh sửa
                   </button>
                 </div>
 
                 <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <p className="text-xs text-neutral-500 uppercase font-bold tracking-wider mb-2">My Shoe Sizes</p>
+                    <p className="text-xs text-neutral-500 uppercase font-bold tracking-wider mb-2">Size giày của tôi</p>
                     <button 
                       onClick={() => openModal('sizes')}
                       className="text-emerald-400 text-sm font-bold hover:underline"
                     >
-                      {profileData.shoeSize ? `US Men ${profileData.shoeSize}` : 'Set Sizes'}
+                      {profileData.shoeSize ? `US Men ${profileData.shoeSize}` : 'Thiết lập size'}
                     </button>
                   </div>
                   <div>
-                    <p className="text-xs text-neutral-500 uppercase font-bold tracking-wider mb-2">My Apparel Sizes</p>
+                    <p className="text-xs text-neutral-500 uppercase font-bold tracking-wider mb-2">Size quần áo của tôi</p>
                     <button 
                       onClick={() => openModal('sizes')}
                       className="text-emerald-400 text-sm font-bold hover:underline"
                     >
-                      {profileData.apparelSize ? profileData.apparelSize : 'Set Sizes'}
+                      {profileData.apparelSize ? profileData.apparelSize : 'Thiết lập size'}
                     </button>
                   </div>
                 </div>
@@ -474,13 +504,13 @@ const UserProfile = ({ isOpen, onClose, user, onLogout, initialTab = 'profile' }
                     <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500">
                       <Briefcase className="w-5 h-5" />
                     </div>
-                    <h2 className="text-lg font-extrabold tracking-tight">Account Type</h2>
+                    <h2 className="text-lg font-extrabold tracking-tight">Loại tài khoản</h2>
                   </div>
                   <button 
                     onClick={() => openModal('account')}
                     className="px-4 py-1.5 text-xs font-bold rounded-full border border-white text-white hover:bg-white hover:text-black transition-all"
                   >
-                    Edit
+                    Chỉnh sửa
                   </button>
                 </div>
 
@@ -494,7 +524,7 @@ const UserProfile = ({ isOpen, onClose, user, onLogout, initialTab = 'profile' }
           {/* TAB 2: BUYING */}
           {activeTab === 'buying' && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-              <h1 className="text-3xl font-black tracking-tight">Buying</h1>
+              <h1 className="text-3xl font-black tracking-tight">Mua hàng</h1>
               
               <div className="grid grid-cols-3 gap-4">
                 <div className="p-4 border border-neutral-800 bg-neutral-900/10 rounded-xl text-center">
@@ -544,7 +574,7 @@ const UserProfile = ({ isOpen, onClose, user, onLogout, initialTab = 'profile' }
           {/* TAB 3: SELLING */}
           {activeTab === 'selling' && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-              <h1 className="text-3xl font-black tracking-tight">Selling</h1>
+              <h1 className="text-3xl font-black tracking-tight">Bán hàng</h1>
               
               <div className="p-12 border border-dashed border-neutral-800 rounded-2xl text-center">
                 <TrendingUp className="w-12 h-12 text-neutral-400 mx-auto mb-4" />
@@ -560,7 +590,7 @@ const UserProfile = ({ isOpen, onClose, user, onLogout, initialTab = 'profile' }
           {/* TAB 4: FAVORITES */}
           {activeTab === 'favorites' && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-              <h1 className="text-3xl font-black tracking-tight">Favorites</h1>
+              <h1 className="text-3xl font-black tracking-tight">Sản phẩm yêu thích</h1>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {favorites.length > 0 ? favorites.map((item) => (
@@ -594,11 +624,158 @@ const UserProfile = ({ isOpen, onClose, user, onLogout, initialTab = 'profile' }
             </div>
           )}
 
+          {activeTab === 'cart' && (
+            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+              <div>
+                <h1 className="text-3xl font-black tracking-tight">Giỏ hàng của bạn</h1>
+                <p className="text-neutral-400 text-sm mt-1">Xem và quản lý các sản phẩm trong giỏ hàng của bạn.</p>
+              </div>
+
+              {cart.length > 0 ? (
+                <div className="space-y-4">
+                  {/* Select All */}
+                  <div className="flex items-center gap-3 pb-3 border-b border-neutral-800 px-1">
+                    <input 
+                      type="checkbox" 
+                      checked={cart.length > 0 && selectedItems.size === cart.length} 
+                      onChange={() => {
+                        const allSelected = cart.length > 0 && selectedItems.size === cart.length;
+                        if (allSelected) {
+                          setSelectedItems(new Set());
+                        } else {
+                          setSelectedItems(new Set(cart.map(item => item.id)));
+                        }
+                      }}
+                      className="w-4 h-4 rounded border-neutral-800 bg-[#161616] text-[#95c0a4] focus:ring-0 accent-emerald-500 cursor-pointer"
+                    />
+                    <span 
+                      className="text-xs font-bold text-neutral-400 uppercase tracking-widest cursor-pointer select-none"
+                      onClick={() => {
+                        const allSelected = cart.length > 0 && selectedItems.size === cart.length;
+                        if (allSelected) {
+                          setSelectedItems(new Set());
+                        } else {
+                          setSelectedItems(new Set(cart.map(item => item.id)));
+                        }
+                      }}
+                    >
+                      Chọn tất cả ({cart.length})
+                    </span>
+                  </div>
+
+                  <div className="border border-neutral-800 rounded-2xl overflow-hidden bg-[#121212]/30 divide-y divide-neutral-800">
+                    {cart.map((item) => (
+                      <div key={item.id} className="p-6 flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between">
+                        <div className="flex gap-4 items-center">
+                          <input 
+                            type="checkbox" 
+                            checked={selectedItems.has(item.id)} 
+                            onChange={() => {
+                              setSelectedItems(prev => {
+                                const next = new Set(prev);
+                                if (next.has(item.id)) {
+                                  next.delete(item.id);
+                                } else {
+                                  next.add(item.id);
+                                }
+                                return next;
+                              });
+                            }}
+                            className="w-4 h-4 rounded border-neutral-800 bg-[#161616] text-[#95c0a4] focus:ring-0 accent-emerald-500 cursor-pointer"
+                          />
+                          <div className="w-20 h-20 bg-neutral-900/50 border border-neutral-850 rounded-xl overflow-hidden flex items-center justify-center p-2 flex-shrink-0">
+                            <img src={item.product.image} className="w-full h-full object-contain" alt={item.product.title} />
+                          </div>
+                          <div>
+                            <h3 className="font-extrabold text-base text-white">{item.product.title}</h3>
+                            <p className="text-xs text-neutral-400 mt-1 uppercase tracking-widest font-mono">Thương hiệu: {item.product.brand}</p>
+                            <p className="text-xs text-neutral-500 mt-1">Màu: {item.color} | Size: {item.size}</p>
+                          </div>
+                        </div>
+
+                        <div className="flex sm:flex-col items-end gap-4 w-full sm:w-auto justify-between sm:justify-start">
+                          <span className="font-black text-emerald-500 text-lg">
+                            ₫{item.product.price ? (parseFloat(item.product.price.toString().replace(/\./g, '')) * item.quantity).toLocaleString('vi-VN') : '0'}
+                          </span>
+                          
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center border border-neutral-850 bg-[#161616] rounded-lg">
+                              <button 
+                                onClick={() => {
+                                  if (item.quantity === 1) {
+                                    onRemoveFromCart(item.id);
+                                  } else {
+                                    onUpdateCartItemQuantity(item.id, item.quantity - 1);
+                                  }
+                                }}
+                                className="px-3 py-1.5 text-neutral-500 hover:text-white transition-colors"
+                              >
+                                <Minus className="w-3 h-3" />
+                              </button>
+                              <span className="text-xs px-2 font-black text-neutral-300">{item.quantity}</span>
+                              <button 
+                                onClick={() => onUpdateCartItemQuantity(item.id, item.quantity + 1)}
+                                className="px-3 py-1.5 text-neutral-500 hover:text-white transition-colors"
+                              >
+                                <Plus className="w-3 h-3" />
+                              </button>
+                            </div>
+
+                            <button 
+                              onClick={() => onRemoveFromCart(item.id)}
+                              className="px-3 py-2 text-xs font-bold rounded-lg border border-red-500/30 text-red-500 hover:bg-red-500/10 transition-colors"
+                            >
+                              Xóa
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="p-6 border border-neutral-800 bg-[#121212]/30 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div>
+                      <p className="text-xs text-neutral-500 uppercase tracking-widest font-mono">
+                        Tổng cộng tạm tính ({cart.filter(item => selectedItems.has(item.id)).reduce((acc, item) => acc + item.quantity, 0)} sản phẩm)
+                      </p>
+                      <p className="text-2xl font-black text-emerald-500 mt-1">
+                        ₫{cart.reduce((acc, item) => {
+                          if (!selectedItems.has(item.id)) return acc;
+                          const priceNum = item.product.price ? parseFloat(item.product.price.toString().replace(/\./g, '')) : 0;
+                          return acc + (priceNum * item.quantity);
+                        }, 0).toLocaleString('vi-VN')}
+                      </p>
+                    </div>
+                    <button 
+                      onClick={() => {
+                        const selected = cart.filter(item => selectedItems.has(item.id));
+                        if (selected.length === 0) {
+                          alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán!');
+                          return;
+                        }
+                        onOpenCheckout(selected);
+                      }}
+                      className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-black font-extrabold text-xs uppercase tracking-widest rounded-xl transition-all w-full md:w-auto text-center"
+                    >
+                      Tiến Hành Thanh Toán
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="py-20 border border-dashed border-neutral-800 rounded-2xl text-center">
+                  <ShoppingBag className="w-12 h-12 text-neutral-400 mx-auto mb-4" />
+                  <p className="font-bold text-lg">Giỏ hàng của bạn đang trống</p>
+                  <p className="text-sm text-neutral-400 mt-1 max-w-sm mx-auto">Vui lòng chọn sản phẩm và thêm vào giỏ hàng để hiển thị tại đây.</p>
+                </div>
+              )}
+            </div>
+          )}
+
           {['wallet', 'settings'].includes(activeTab) && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-              <h1 className="text-3xl font-black capitalize tracking-tight">{activeTab}</h1>
+              <h1 className="text-3xl font-black capitalize tracking-tight">{activeTab === 'wallet' ? 'Ví tiền' : 'Cài đặt'}</h1>
               <div className="p-8 border border-neutral-800 bg-neutral-900/5 rounded-2xl">
-                <p className="text-sm text-neutral-400">Trực quan hóa tab <span className="text-emerald-500 font-bold">{activeTab}</span> với các tùy chỉnh sâu hơn đang được thiết lập riêng cho bạn.</p>
+                <p className="text-sm text-neutral-400">Trực quan hóa tab <span className="text-emerald-500 font-bold">{activeTab === 'wallet' ? 'Ví tiền' : 'Cài đặt'}</span> với các tùy chỉnh sâu hơn đang được thiết lập riêng cho bạn.</p>
               </div>
             </div>
           )}

@@ -4,6 +4,8 @@ const orderSchema = new mongoose.Schema({
     orderNumber: { type: String, required: true, unique: true },
     customer: { type: String, required: true },
     userEmail: { type: String }, // Link to user
+    phone: { type: String, required: true },
+    address: { type: String, required: true },
     amount: { type: Number, required: true },
     status: { type: String, default: 'Chờ xác nhận' }, // 'Chờ xác nhận', 'Đang xử lý', 'Đang giao', 'Hoàn thành'
     items: { type: Number, default: 1 },

@@ -35,7 +35,7 @@ const HeroSection = () => (
     {/* Scroll Indicator */}
     <div className="absolute bottom-8 right-12 z-20 hidden md:flex flex-col items-center gap-4">
        <div className="w-[1px] h-20 bg-gradient-to-t from-[#95c0a4] to-transparent"></div>
-       <span className="text-[10px] font-black uppercase tracking-[0.5em] rotate-90 origin-right translate-x-4">SCROLL</span>
+       <span className="text-[10px] font-black uppercase tracking-[0.5em] rotate-90 origin-right translate-x-4">CUỘN XUỐNG</span>
     </div>
   </section>
 );

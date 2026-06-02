@@ -4,8 +4,11 @@ import { TrendingUp } from 'lucide-react';
  * THÀNH PHẦN: Card sản phẩm
  * Hiển thị thông tin chi tiết về sản phẩm với hiệu ứng hover
  */
-const ProductCard = ({ title, brand, price, image, soldCount, isNew }) => (
-  <div className="group flex flex-col bg-[#121212] border border-zinc-800 rounded-sm overflow-hidden hover:border-[#95c0a4] transition-all duration-500 cursor-pointer shadow-lg hover:shadow-[#95c0a4]/10">
+const ProductCard = ({ id, title, brand, price, image, soldCount, isNew, onClick }) => (
+  <div 
+    onClick={() => onClick({ id, title, brand, price, image, soldCount, isNew })}
+    className="group flex flex-col bg-[#121212] border border-zinc-800 rounded-sm overflow-hidden hover:border-[#95c0a4] transition-all duration-500 cursor-pointer shadow-lg hover:shadow-[#95c0a4]/10"
+  >
     <div className="relative aspect-square overflow-hidden bg-zinc-900 flex items-center justify-center p-4">
       {isNew && (
         <span className="absolute top-3 left-3 z-10 bg-[#95c0a4] text-[#0f0f0f] text-[10px] font-black px-2 py-0.5 rounded-sm uppercase tracking-tighter shadow-sm">

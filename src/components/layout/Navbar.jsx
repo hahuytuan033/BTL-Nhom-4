@@ -5,9 +5,11 @@ import { Search, Menu, User, ShoppingBag } from 'lucide-react';
  * Thanh điều hướng chính
  * Có hiệu ứng trong suốt khi ở đầu trang, đổi nền khi scroll
  */
-const Navbar = ({ onUserClick, user, onLogout }) => {
+const Navbar = ({ onUserClick, user, onLogout, cart = [] }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const totalCartItems = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -64,22 +66,30 @@ const Navbar = ({ onUserClick, user, onLogout }) => {
                     <p className="text-zinc-500 text-xs truncate">{user.email}</p>
                   </div>
                   <div className="p-2 space-y-1">
-                    <button onClick={() => onUserClick('profile')} className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-900 rounded-sm transition-colors">Profile</button>
-                    <button onClick={() => onUserClick('buying')} className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-900 rounded-sm transition-colors">Buying</button>
-                    <button onClick={() => onUserClick('favorites')} className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-900 rounded-sm transition-colors">Favorites</button>
-                    <button onClick={() => onUserClick('wallet')} className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-900 rounded-sm transition-colors">Wallet</button>
-                    <button onClick={() => onUserClick('settings')} className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-900 rounded-sm transition-colors">Setting</button>
+                    <button onClick={() => onUserClick('profile')} className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-900 rounded-sm transition-colors">Thông tin cá nhân</button>
+                    <button onClick={() => onUserClick('cart')} className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-900 rounded-sm transition-colors">Giỏ hàng</button>
+                    <button onClick={() => onUserClick('buying')} className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-900 rounded-sm transition-colors">Lịch sử mua</button>
+                    <button onClick={() => onUserClick('favorites')} className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-900 rounded-sm transition-colors">Danh sách yêu thích</button>
+                    <button onClick={() => onUserClick('wallet')} className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-900 rounded-sm transition-colors">Ví tiền</button>
+                    <button onClick={() => onUserClick('settings')} className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-zinc-900 rounded-sm transition-colors">Cài đặt</button>
                   </div>
                   <div className="p-2 border-t border-zinc-800">
-                    <button onClick={onLogout} className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-500/10 rounded-sm transition-colors font-bold">Logout</button>
+                    <button onClick={onLogout} className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-500/10 rounded-sm transition-colors font-bold">Đăng xuất</button>
                   </div>
                 </div>
               )}
             </div>
             
-            <div className="relative p-2 hover:bg-zinc-800 rounded-full transition-all group cursor-pointer">
+            <div 
+              onClick={() => user ? onUserClick('cart') : onUserClick()}
+              className="relative p-2 hover:bg-zinc-800 rounded-full transition-all group cursor-pointer"
+            >
               <ShoppingBag className="group-hover:text-[#95c0a4] transition-colors" size={22} />
-              <span className="absolute top-1 right-1 bg-[#95c0a4] text-black text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-black">2</span>
+              {totalCartItems > 0 && (
+                <span className="absolute top-1 right-1 bg-[#95c0a4] text-black text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-black">
+                  {totalCartItems}
+                </span>
+              )}
             </div>
             <Menu className="lg:hidden cursor-pointer hover:text-[#95c0a4]" size={24} />
           </div>

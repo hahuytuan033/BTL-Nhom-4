@@ -64,12 +64,12 @@ export const shoeData = [
  * Icon được truyền từ component sử dụng để tránh import lucide-react ở đây
  */
 export const categoryNames = [
-  "Sneakers",
-  "Streetwear",
-  "Watches",
-  "Collectibles",
-  "Handbags",
-  "Apparel",
+  "Giày Sneaker",
+  "Thời Trang Đường Phố",
+  "Đồng Hồ",
+  "Đồ Sưu Tầm",
+  "Túi Xách",
+  "Trang Phục",
 ];
 
 /**

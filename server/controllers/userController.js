@@ -143,3 +143,39 @@ exports.toggleWishlist = async (req, res) => {
         res.status(500).json({ message: 'Lỗi server', error: error.message });
     }
 };
+
+// @desc    Lấy giỏ hàng của người dùng
+// @route   GET /api/users/cart?email=...
+exports.getCart = async (req, res) => {
+    try {
+        const email = req.query.email;
+        const user = await User.findOne({ email });
+        if (user) {
+            res.json(user.cart || []);
+        } else {
+            res.status(404).json({ message: 'Không tìm thấy người dùng' });
+        }
+    } catch (error) {
+        console.error('❌ Error:', error);
+        res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+};
+
+// @desc    Cập nhật giỏ hàng của người dùng
+// @route   POST /api/users/cart
+exports.updateCart = async (req, res) => {
+    try {
+        const { email, cartItems } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'Không tìm thấy người dùng' });
+        }
+
+        user.cart = cartItems || [];
+        await user.save();
+        res.json(user.cart);
+    } catch (error) {
+        console.error('❌ Error:', error);
+        res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+};

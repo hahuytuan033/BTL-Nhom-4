@@ -9,7 +9,7 @@ import SectionHeader from '../ui/SectionHeader';
  * @param {boolean} forceNew - Bắt buộc tất cả sản phẩm hiển thị badge "MỚI"
  * @param {string} keyPrefix - Prefix cho key tránh trùng lặp khi render 2 lần
  */
-const ProductsSection = ({ title, subtitle, products, forceNew = false, keyPrefix = '' }) => (
+const ProductsSection = ({ title, subtitle, products, onProductClick, forceNew = false, keyPrefix = '' }) => (
   <section className={forceNew ? "mb-16" : "mb-24"}>
     <SectionHeader title={title} subtitle={subtitle} />
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-5">
@@ -18,6 +18,7 @@ const ProductsSection = ({ title, subtitle, products, forceNew = false, keyPrefi
           key={`${keyPrefix}${item.id}`} 
           {...item} 
           isNew={forceNew ? true : item.isNew} 
+          onClick={onProductClick}
         />
       ))}
     </div>

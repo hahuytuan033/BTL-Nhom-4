@@ -108,7 +108,7 @@ const LoginModal = ({ isOpen, onClose, setUser }) => {
              <div className="w-16 h-16 bg-[#95c0a4] rounded-sm flex items-center justify-center rotate-6 mb-4 shadow-xl">
               <span className="text-black font-black text-2xl italic">N4</span>
             </div>
-            <h3 className="text-white text-3xl font-black italic uppercase tracking-tighter leading-none mb-2">JOIN THE CLUB.</h3>
+            <h3 className="text-white text-3xl font-black italic uppercase tracking-tighter leading-none mb-2">THAM GIA NGAY.</h3>
             <p className="text-zinc-400 text-sm">Trở thành thành viên của Nhóm 4 để nhận ưu đãi độc quyền.</p>
           </div>
         </div>

@@ -6,12 +6,12 @@ import { categoryNames } from '../../data/products';
  * Map tên danh mục → icon tương ứng
  */
 const categoryIcons = {
-  Sneakers: <Zap size={20} />,
-  Streetwear: <ShieldCheck size={20} />,
-  Watches: <Star size={20} />,
-  Collectibles: <TrendingUp size={20} />,
-  Handbags: <ShoppingBag size={20} />,
-  Apparel: <User size={20} />,
+  "Giày Sneaker": <Zap size={20} />,
+  "Thời Trang Đường Phố": <ShieldCheck size={20} />,
+  "Đồng Hồ": <Star size={20} />,
+  "Đồ Sưu Tầm": <TrendingUp size={20} />,
+  "Túi Xách": <ShoppingBag size={20} />,
+  "Trang Phục": <User size={20} />,
 };
 
 /**
