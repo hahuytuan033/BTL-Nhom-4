@@ -1,6 +1,7 @@
 import AdminLayout from "../../component/Adminlayout";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { io } from "socket.io-client";
 
 export default function Orders() {
   const [orders, setOrders] = useState([]);
@@ -19,6 +20,27 @@ export default function Orders() {
       }
     };
     fetchOrders();
+  }, []);
+
+  // Listen for real-time order creations
+  useEffect(() => {
+    const serverUrl = import.meta.env.VITE_API_URL 
+      ? import.meta.env.VITE_API_URL.replace('/api', '') 
+      : 'http://localhost:5000';
+    
+    const socket = io(serverUrl);
+
+    socket.on('connect', () => {
+      console.log('🔌 Orders page connected to Socket.io');
+    });
+
+    socket.on('new_order', (newOrder) => {
+      setOrders(prevOrders => [newOrder, ...prevOrders]);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   const [selectedStatus, setSelectedStatus] = useState("Tất cả");

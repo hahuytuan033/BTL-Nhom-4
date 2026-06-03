@@ -24,11 +24,13 @@
 - **Quản lý hồ sơ (User Profile):** Cập nhật thông tin cá nhân, địa chỉ giao hàng, tùy chọn kích thước (shoe size, apparel size).
 - **Yêu thích (Wishlist):** Lưu các sản phẩm yêu thích vào danh sách riêng.
 - **Lịch sử mua hàng:** Theo dõi các đơn hàng đã đặt và trạng thái của chúng.
+- **Yêu cầu hoàn trả:** Gửi yêu cầu hoàn trả đối với các đơn hàng đã nhận ("Hoàn thành") kèm lý do chi tiết nếu sản phẩm nhận được không như mong muốn.
 
 #### 🛠️ Quản trị viên (Admin Dashboard)
 - **Tổng quan (Dashboard):** Xem thống kê nhanh về tổng sản phẩm, đơn hàng, khách hàng và doanh thu. Theo dõi đơn hàng mới và sản phẩm sắp hết hàng.
 - **Quản lý sản phẩm:** Xem danh sách, thêm sản phẩm mới (hỗ trợ upload ảnh lên Cloudinary), và xóa sản phẩm.
-- **Quản lý đơn hàng:** Theo dõi danh sách đơn hàng, cập nhật trạng thái đơn hàng (Chờ xác nhận, Đang xử lý, Đang giao, Hoàn thành).
+- **Quản lý đơn hàng:** Theo dõi danh sách đơn hàng, cập nhật trạng thái đơn hàng (Chờ xác nhận, Đang xử lý, Đang giao, Hoàn thành, Yêu cầu hoàn trả, Đã hoàn trả).
+- **Xử lý hoàn trả:** Xem danh sách yêu cầu hoàn trả, duyệt hoặc từ chối yêu cầu hoàn trả của khách hàng.
 - **Quản lý người dùng:** Xem danh sách khách hàng, thay đổi trạng thái hoạt động (Khóa/Mở khóa tài khoản).
 - **Báo cáo & Thống kê:** Biểu đồ doanh thu 6 tháng gần nhất và các chỉ số kinh doanh chính.
 - **Cài đặt hệ thống:** Cấu hình thông tin trang web, thông báo và bảo mật.
@@ -47,6 +49,8 @@
 | F08 | Admin: Quản lý & Cập nhật trạng thái đơn hàng | Admin |
 | F09 | Admin: Quản lý & Khóa/Mở người dùng | Admin |
 | F10 | Admin: Báo cáo doanh thu & Thống kê chi tiết | Admin |
+| F11 | Gửi yêu cầu hoàn trả đơn hàng | User |
+| F12 | Admin: Phê duyệt/Từ chối và cập nhật trạng thái hoàn trả | Admin |
 
 ---
 
@@ -98,7 +102,7 @@
 
 - **Users:** `fullName`, `email`, `password`, `role` (user/admin), `status` (active/inactive), `wishlist` (ref: Product).
 - **Products:** `name`, `brand`, `category`, `price`, `stock`, `status` (Có sẵn/Sắp hết/Hết hàng), `description`, `image`.
-- **Orders:** `orderNumber`, `customer`, `userEmail`, `amount`, `status` (Chờ xác nhận/Đang xử lý/Đang giao/Hoàn thành), `items`, `createdAt`.
+- **Orders:** `orderNumber`, `customer`, `userEmail`, `amount`, `status` (Chờ xác nhận/Đang xử lý/Đang giao/Hoàn thành/Yêu cầu hoàn trả/Đã hoàn trả/Từ chối hoàn trả), `returnReason`, `items`, `createdAt`.
 
 ---
 

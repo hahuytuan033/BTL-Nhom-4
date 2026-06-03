@@ -13,6 +13,7 @@
 - **Xem sản phẩm:** Hiển thị thông tin sản phẩm (tên, giá, thương hiệu, lượt bán) kèm hình ảnh từ Cloudinary.
 - **Yêu thích (Wishlist):** Thêm/Xóa sản phẩm vào danh sách yêu thích cá nhân.
 - **Lịch sử đơn hàng:** Xem danh sách các đơn hàng đã đặt và theo dõi trạng thái hiện tại.
+- **Yêu cầu hoàn trả (Return Request):** Cho phép người dùng gửi yêu cầu hoàn trả đối với các đơn hàng đã nhận ("Hoàn thành") kèm lý do chi tiết nếu sản phẩm không đúng như mong muốn.
 
 ---
 
@@ -31,6 +32,7 @@
 ### Quản lý Đơn hàng:
 - **Theo dõi đơn hàng:** Xem danh sách đơn hàng kèm mã đơn, khách hàng, số lượng và tổng tiền.
 - **Cập nhật trạng thái:** Chuyển đổi trạng thái đơn hàng (Chờ xác nhận -> Đang xử lý -> Đang giao -> Hoàn thành).
+- **Xử lý hoàn trả:** Xem xét lý do hoàn trả hàng của khách hàng, tiến hành Phê duyệt hoặc Từ chối yêu cầu và cập nhật lại trạng thái đơn hàng.
 
 ### Quản lý Khách hàng:
 - **Danh sách người dùng:** Xem thông tin khách hàng, vai trò (Admin/User) và ngày tham gia.

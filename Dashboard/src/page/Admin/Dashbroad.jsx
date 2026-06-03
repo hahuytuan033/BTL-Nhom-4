@@ -1,6 +1,7 @@
 import AdminLayout from "../../component/Adminlayout";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { io } from "socket.io-client";
 
 export default function Dashboard() {
   const [data, setData] = useState({
@@ -32,6 +33,37 @@ export default function Dashboard() {
     };
 
     fetchData();
+  }, []);
+
+  // Listen for real-time updates to statistics
+  useEffect(() => {
+    const serverUrl = import.meta.env.VITE_API_URL 
+      ? import.meta.env.VITE_API_URL.replace('/api', '') 
+      : 'http://localhost:5000';
+    
+    const socket = io(serverUrl);
+
+    socket.on('connect', () => {
+      console.log('🔌 Dashboard main stats page connected to Socket.io');
+    });
+
+    socket.on('new_order', (newOrder) => {
+      setData(prev => ({
+        ...prev,
+        orders: [newOrder, ...prev.orders]
+      }));
+    });
+
+    socket.on('new_user', (newUser) => {
+      setData(prev => ({
+        ...prev,
+        users: [newUser, ...prev.users]
+      }));
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   const calculateTotalRevenue = () => {

@@ -39,6 +39,10 @@ exports.updateOrderStatus = async (req, res) => {
             { new: true }
         );
         if (order) {
+            // Emit Socket.io event for real-time order update
+            if (req.io) {
+                req.io.emit('update_order', order);
+            }
             res.json(order);
         } else {
             res.status(404).json({ message: 'Không tìm thấy đơn hàng' });

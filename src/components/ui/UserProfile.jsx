@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { io } from 'socket.io-client';
 import { 
   User, 
   Package, 
@@ -88,6 +89,29 @@ const UserProfile = ({ isOpen, onClose, user, onLogout, initialTab = 'profile', 
       fetchData();
     }
   }, [isOpen, user, activeTab]);
+
+  // Listen for real-time order status updates from Admin Dashboard
+  useEffect(() => {
+    if (isOpen && user) {
+      const socket = io('http://localhost:5000');
+
+      socket.on('connect', () => {
+        console.log('🔌 Storefront profile connected to Socket.io for order updates');
+      });
+
+      socket.on('update_order', (updatedOrder) => {
+        if (updatedOrder.userEmail === user.email) {
+          setOrders(prevOrders => 
+            prevOrders.map(order => order._id === updatedOrder._id ? updatedOrder : order)
+          );
+        }
+      });
+
+      return () => {
+        socket.disconnect();
+      };
+    }
+  }, [isOpen, user]);
 
   // Cập nhật profileData khi prop user thay đổi
   useEffect(() => {
@@ -558,7 +582,18 @@ const UserProfile = ({ isOpen, onClose, user, onLogout, initialTab = 'profile', 
                         </div>
                         <div>
                           <p className="font-semibold">Đơn hàng #{order.orderNumber}</p>
-                          <p className="text-xs text-neutral-400">Items: {order.items} | Trạng thái: {order.status}</p>
+                          <p className="text-xs text-neutral-400">
+                            Items: {order.items} | Trạng thái: <span style={{ 
+                              color: {
+                                "Chờ xác nhận": "#3b82f6",
+                                "Đang xử lý": "#f59e0b",
+                                "Chờ xử lý": "#f59e0b",
+                                "Đang giao": "#8b5cf6",
+                                "Hoàn thành": "#10b981"
+                              }[order.status] || "#9ca3af",
+                              fontWeight: "bold"
+                            }}>{order.status}</span>
+                          </p>
                         </div>
                       </div>
                       <p className="font-bold text-emerald-500">{order.amount.toLocaleString('vi-VN')}đ</p>
