@@ -79,6 +79,20 @@ export default function Navbar() {
       setActiveToast({ id: newNotification.id, text, type: 'order' });
     });
 
+    socket.on('update_order', (order) => {
+      if (order.status === 'Yêu cầu hoàn trả') {
+        const text = `Khách hàng ${order.customer} đã gửi yêu cầu hoàn trả đơn hàng ${order.orderNumber}!`;
+        const newNotification = {
+          id: `o-return-${order._id}-${Date.now()}`,
+          text,
+          time: new Date()
+        };
+        
+        setNotifications(prev => [newNotification, ...prev].slice(0, 15));
+        setActiveToast({ id: newNotification.id, text, type: 'return' });
+      }
+    });
+
     return () => {
       socket.disconnect();
     };
@@ -112,11 +126,11 @@ export default function Navbar() {
       {activeToast && (
         <div className={`admin-toast-popup ${activeToast.type}`}>
           <div className="admin-toast-icon">
-            {activeToast.type === 'order' ? '🛒' : '👤'}
+            {activeToast.type === 'order' ? '🛒' : activeToast.type === 'return' ? '⚠️' : '👤'}
           </div>
           <div className="admin-toast-content">
             <h4 className="admin-toast-title">
-              {activeToast.type === 'order' ? 'Đơn hàng mới!' : 'Thành viên mới!'}
+              {activeToast.type === 'order' ? 'Đơn hàng mới!' : activeToast.type === 'return' ? 'Yêu cầu hoàn trả!' : 'Thành viên mới!'}
             </h4>
             <p className="admin-toast-text">{activeToast.text}</p>
           </div>

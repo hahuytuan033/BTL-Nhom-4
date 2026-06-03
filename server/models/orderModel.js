@@ -7,7 +7,8 @@ const orderSchema = new mongoose.Schema({
     phone: { type: String, required: true },
     address: { type: String, required: true },
     amount: { type: Number, required: true },
-    status: { type: String, default: 'Chờ xác nhận' }, // 'Chờ xác nhận', 'Đang xử lý', 'Đang giao', 'Hoàn thành'
+    status: { type: String, default: 'Chờ xác nhận' }, // 'Chờ xác nhận', 'Đang xử lý', 'Đang giao', 'Hoàn thành', 'Yêu cầu hoàn trả', 'Đã hoàn trả', 'Từ chối hoàn trả'
+    returnReason: { type: String },
     items: { type: Number, default: 1 },
     createdAt: { type: Date, default: Date.now }
 });

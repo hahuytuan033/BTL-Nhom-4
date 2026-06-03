@@ -133,7 +133,9 @@ const UserProfile = ({ isOpen, onClose, user, onLogout, initialTab = 'profile', 
   const [addresses, setAddresses] = useState([]);
   
   // Trạng thái mở các Modal chỉnh sửa
-  const [activeModal, setActiveModal] = useState(null); // 'profile' | 'address' | 'sizes' | 'account'
+  const [activeModal, setActiveModal] = useState(null); // 'profile' | 'address' | 'sizes' | 'account' | 'return'
+  const [selectedReturnOrderId, setSelectedReturnOrderId] = useState(null);
+  const [returnReasonText, setReturnReasonText] = useState('');
 
   // Form tạm thời cho modal
   const [tempProfile, setTempProfile] = useState({ ...profileData });
@@ -210,6 +212,42 @@ const UserProfile = ({ isOpen, onClose, user, onLogout, initialTab = 'profile', 
     const updated = addresses.filter((_, i) => i !== index);
     setAddresses(updated);
     showToast('Đã xóa địa chỉ giao hàng.');
+  };
+
+  // Gửi yêu cầu hoàn trả
+  const handleSubmitReturn = async (e) => {
+    e.preventDefault();
+    if (!returnReasonText.trim()) {
+      showToast('Vui lòng nhập lý do hoàn trả!');
+      return;
+    }
+    try {
+      const response = await fetch(`http://localhost:5000/api/orders/${selectedReturnOrderId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          status: 'Yêu cầu hoàn trả',
+          returnReason: returnReasonText,
+        }),
+      });
+
+      if (response.ok) {
+        const updatedOrder = await response.json();
+        setOrders(prevOrders =>
+          prevOrders.map(order => order._id === updatedOrder._id ? updatedOrder : order)
+        );
+        setActiveModal(null);
+        showToast('Gửi yêu cầu hoàn trả đơn hàng thành công!');
+      } else {
+        const errorData = await response.json();
+        showToast(errorData.message || 'Gửi yêu cầu hoàn trả thất bại!');
+      }
+    } catch (error) {
+      console.error('Error submitting return request:', error);
+      showToast('Lỗi kết nối đến server!');
+    }
   };
 
   // handleToggleFavorite
@@ -589,14 +627,31 @@ const UserProfile = ({ isOpen, onClose, user, onLogout, initialTab = 'profile', 
                                 "Đang xử lý": "#f59e0b",
                                 "Chờ xử lý": "#f59e0b",
                                 "Đang giao": "#8b5cf6",
-                                "Hoàn thành": "#10b981"
+                                "Hoàn thành": "#10b981",
+                                "Yêu cầu hoàn trả": "#f97316",
+                                "Đã hoàn trả": "#ef4444",
+                                "Từ chối hoàn trả": "#71717a"
                               }[order.status] || "#9ca3af",
                               fontWeight: "bold"
                             }}>{order.status}</span>
                           </p>
                         </div>
                       </div>
-                      <p className="font-bold text-emerald-500">{order.amount.toLocaleString('vi-VN')}đ</p>
+                      <div className="flex items-center gap-4">
+                        {order.status === 'Hoàn thành' && (
+                          <button
+                            onClick={() => {
+                              setSelectedReturnOrderId(order._id);
+                              setReturnReasonText('');
+                              setActiveModal('return');
+                            }}
+                            className="px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg text-xs font-bold transition-all border border-red-500/20"
+                          >
+                            Hoàn trả hàng
+                          </button>
+                        )}
+                        <p className="font-bold text-emerald-500">{order.amount.toLocaleString('vi-VN')}đ</p>
+                      </div>
                     </div>
                   )) : (
                     <div className="p-8 text-center text-neutral-500 text-sm">Bạn chưa có đơn hàng nào.</div>
@@ -1074,6 +1129,45 @@ const UserProfile = ({ isOpen, onClose, user, onLogout, initialTab = 'profile', 
                   className="px-4 py-2 text-xs font-bold rounded-full bg-emerald-500 hover:bg-emerald-600 text-black"
                 >
                   Xác nhận thay đổi
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Hoàn trả hàng */}
+      {activeModal === 'return' && (
+        <div className="fixed inset-0 bg-black/75 z-[300] flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-[#161616] border border-neutral-800 w-full max-w-md rounded-2xl overflow-hidden p-6 animate-in zoom-in-95 duration-150 text-white">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-black tracking-tight">Yêu Cầu Hoàn Trả Hàng</h3>
+              <button onClick={() => setActiveModal(null)} className="p-1 rounded-full hover:bg-neutral-800"><X className="w-5 h-5" /></button>
+            </div>
+            <form onSubmit={handleSubmitReturn} className="space-y-4">
+              <div>
+                <label className="block text-xs text-neutral-400 uppercase font-bold tracking-wider mb-2">Lý do hoàn trả hàng</label>
+                <textarea
+                  value={returnReasonText}
+                  onChange={e => setReturnReasonText(e.target.value)}
+                  placeholder="Vui lòng nhập lý do hoàn trả cụ thể (ví dụ: Sản phẩm bị lỗi đế, nhầm size...)"
+                  className="w-full px-4 py-2.5 bg-neutral-900 border border-neutral-800 rounded-lg text-sm focus:outline-none focus:border-emerald-500 text-white min-h-[100px] resize-none"
+                  required
+                />
+              </div>
+              <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-neutral-800">
+                <button 
+                  type="button"
+                  onClick={() => setActiveModal(null)} 
+                  className="px-4 py-2 text-xs font-bold rounded-full border border-neutral-700 text-neutral-400 hover:text-white"
+                >
+                  Hủy
+                </button>
+                <button 
+                  type="submit"
+                  className="px-4 py-2 text-xs font-bold rounded-full bg-red-500 hover:bg-red-600 text-white"
+                >
+                  Gửi yêu cầu
                 </button>
               </div>
             </form>

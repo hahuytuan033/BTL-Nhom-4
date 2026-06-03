@@ -38,13 +38,19 @@ export default function Orders() {
       setOrders(prevOrders => [newOrder, ...prevOrders]);
     });
 
+    socket.on('update_order', (updatedOrder) => {
+      setOrders(prevOrders =>
+        prevOrders.map(order => order._id === updatedOrder._id ? updatedOrder : order)
+      );
+    });
+
     return () => {
       socket.disconnect();
     };
   }, []);
 
   const [selectedStatus, setSelectedStatus] = useState("Tất cả");
-  const statuses = ["Tất cả", "Chờ xác nhận", "Đang xử lý", "Đang giao", "Hoàn thành"];
+  const statuses = ["Tất cả", "Chờ xác nhận", "Đang xử lý", "Đang giao", "Hoàn thành", "Yêu cầu hoàn trả", "Đã hoàn trả", "Từ chối hoàn trả"];
 
   const filteredOrders = selectedStatus === "Tất cả"
     ? orders
@@ -60,6 +66,12 @@ export default function Orders() {
         return "var(--primary)";
       case "Đang giao":
         return "#8B5CF6";
+      case "Yêu cầu hoàn trả":
+        return "#f97316";
+      case "Đã hoàn trả":
+        return "#ef4444";
+      case "Từ chối hoàn trả":
+        return "#71717a";
       default:
         return "var(--muted)";
     }
@@ -117,7 +129,14 @@ export default function Orders() {
                     <td className="td">
                       <span className="order-number">{order.orderNumber}</span>
                     </td>
-                    <td className="td">{order.customer}</td>
+                    <td className="td">
+                      <div>{order.customer}</div>
+                      {order.status === "Yêu cầu hoàn trả" && order.returnReason && (
+                        <div style={{ color: "#f97316", fontSize: "12px", marginTop: "4px", fontWeight: "bold" }}>
+                          ⚠️ Lý do trả: {order.returnReason}
+                        </div>
+                      )}
+                    </td>
                     <td className="td">
                       <span className="item-count">{order.items} sản phẩm</span>
                     </td>
@@ -136,19 +155,40 @@ export default function Orders() {
                       </span>
                     </td>
                     <td className="td">{new Date(order.createdAt).toLocaleDateString('vi-VN')}</td>
-                    <td className="td">
+                    <td className="td" style={{ display: 'flex', alignItems: 'center', gap: '6px', minHeight: '50px' }}>
                       <button type="button" className="view-btn">👁️ Xem</button>
-                      {order.status !== "Hoàn thành" && (
-                        <select
-                          value={order.status}
-                          onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                          className="status-select"
-                        >
-                          <option value="Chờ xác nhận">Chờ xác nhận</option>
-                          <option value="Đang xử lý">Đang xử lý</option>
-                          <option value="Đang giao">Đang giao</option>
-                          <option value="Hoàn thành">Hoàn thành</option>
-                        </select>
+                      {order.status === "Yêu cầu hoàn trả" ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => handleStatusChange(order._id, "Đã hoàn trả")}
+                            className="status-btn"
+                            style={{ backgroundColor: "#ef4444", color: "#fff", fontSize: "11px", padding: "4px 8px" }}
+                          >
+                            Duyệt
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleStatusChange(order._id, "Từ chối hoàn trả")}
+                            className="status-btn"
+                            style={{ backgroundColor: "#71717a", color: "#fff", fontSize: "11px", padding: "4px 8px" }}
+                          >
+                            Từ chối
+                          </button>
+                        </>
+                      ) : (
+                        !["Hoàn thành", "Đã hoàn trả", "Từ chối hoàn trả"].includes(order.status) && (
+                          <select
+                            value={order.status}
+                            onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                            className="status-select"
+                          >
+                            <option value="Chờ xác nhận">Chờ xác nhận</option>
+                            <option value="Đang xử lý">Đang xử lý</option>
+                            <option value="Đang giao">Đang giao</option>
+                            <option value="Hoàn thành">Hoàn thành</option>
+                          </select>
+                        )
                       )}
                     </td>
                   </tr>

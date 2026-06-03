@@ -32,10 +32,15 @@ exports.getUserOrders = async (req, res) => {
 // @route   PUT /api/orders/:id/status
 exports.updateOrderStatus = async (req, res) => {
     try {
-        const { status } = req.body;
+        const { status, returnReason } = req.body;
+        const updateData = { status };
+        if (returnReason !== undefined) {
+            updateData.returnReason = returnReason;
+        }
+
         const order = await Order.findByIdAndUpdate(
             req.params.id, 
-            { status }, 
+            updateData, 
             { new: true }
         );
         if (order) {
@@ -80,13 +85,7 @@ exports.createOrder = async (req, res) => {
 
         // Emit Socket.io event for real-time notification
         if (req.io) {
-            req.io.emit('new_order', {
-                _id: order._id,
-                customer: order.customer,
-                orderNumber: order.orderNumber,
-                amount: order.amount,
-                createdAt: order.createdAt
-            });
+            req.io.emit('new_order', order);
         }
 
         res.status(201).json(order);

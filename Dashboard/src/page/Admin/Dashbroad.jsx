@@ -54,6 +54,13 @@ export default function Dashboard() {
       }));
     });
 
+    socket.on('update_order', (updatedOrder) => {
+      setData(prev => ({
+        ...prev,
+        orders: prev.orders.map(order => order._id === updatedOrder._id ? updatedOrder : order)
+      }));
+    });
+
     socket.on('new_user', (newUser) => {
       setData(prev => ({
         ...prev,
@@ -104,6 +111,13 @@ export default function Dashboard() {
       color: "#F59E0B",
     },
     {
+      id: 5,
+      title: "Yêu Cầu Hoàn Trả",
+      value: data.orders.filter(o => o.status === "Yêu cầu hoàn trả").length,
+      icon: "⚠️",
+      color: "#F97316",
+    },
+    {
       id: 4,
       title: "Doanh Thu",
       value: `${(calculateTotalRevenue() / 1000000).toFixed(1)}M`,
@@ -118,6 +132,9 @@ export default function Dashboard() {
       case "Đang xử lý": return "#F59E0B";
       case "Chờ xác nhận": return "#3B82F6";
       case "Đang giao": return "#8B5CF6";
+      case "Yêu cầu hoàn trả": return "#F97316";
+      case "Đã hoàn trả": return "#EF4444";
+      case "Từ chối hoàn trả": return "#71717A";
       default: return "#6B7280";
     }
   };
