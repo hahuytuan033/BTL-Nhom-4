@@ -21,11 +21,11 @@ import UserProfile from './components/ui/UserProfile';
 import CheckoutModal from './components/ui/CheckoutModal';
 
 // Data
-import { shoeData } from './data/products';
+
 
 function ProductDetailWrapper({ products, onBack, cart, onAddToCart, onUpdateCartItemQuantity, onRemoveFromCart, onOpenCheckout }) {
   const { id } = useParams();
-  const product = products.find(p => p.id.toString() === id) || shoeData.find(p => p.id.toString() === id);
+  const product = products.find(p => p.id.toString() === id);
 
   return (
     <ProductDetail 
@@ -135,8 +135,7 @@ export default function App() {
           if (response.ok) {
             const dbCart = await response.json();
             const mappedCart = dbCart.map(item => {
-              const product = products.find(p => p.id.toString() === item.productId) || 
-                              shoeData.find(p => p.id.toString() === item.productId);
+              const product = products.find(p => p.id.toString() === item.productId);
               
               const productObj = product || {
                 id: item.productId,
@@ -232,11 +231,11 @@ export default function App() {
           setProducts(formattedProducts);
         } else {
           console.error('Failed to fetch products');
-          setProducts(shoeData);
+          setProducts([]);
         }
       } catch (error) {
         console.error('Error fetching products:', error);
-        setProducts(shoeData);
+        setProducts([]);
       } finally {
         setLoading(false);
       }
@@ -284,7 +283,7 @@ export default function App() {
                     <ProductsSection
                       title="Đề xuất cho bạn"
                       subtitle="Dựa trên phong cách và sở thích cá nhân của bạn"
-                      products={products.length > 0 ? products : shoeData}
+                      products={products}
                       onProductClick={handleProductClick}
                     />
 
@@ -293,7 +292,7 @@ export default function App() {
                     <ProductsSection
                       title="Hàng mới cập bến"
                       subtitle="Cập nhật những xu hướng mới nhất từ thị trường toàn cầu"
-                      products={products.length > 0 ? [...products].reverse() : [...shoeData].reverse()}
+                      products={[...products].reverse()}
                       forceNew={true}
                       keyPrefix="new-"
                       onProductClick={handleProductClick}
