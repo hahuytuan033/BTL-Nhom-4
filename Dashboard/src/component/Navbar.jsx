@@ -1,13 +1,19 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { io } from "socket.io-client";
 
 export default function Navbar() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [activeToast, setActiveToast] = useState(null); // { id, text, type }
   const navigate = useNavigate();
 
+  const adminName = localStorage.getItem("adminName") || "Quản trị viên";
+  const adminEmail = localStorage.getItem("adminEmail") || "admin@example.com";
+
+  // Load initial notifications (pull)
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -37,17 +43,87 @@ export default function Navbar() {
     fetchEvents();
   }, []);
 
+  // Socket.io real-time connection
+  useEffect(() => {
+    const serverUrl = import.meta.env.VITE_API_URL 
+      ? import.meta.env.VITE_API_URL.replace('/api', '') 
+      : 'http://localhost:5000';
+    
+    const socket = io(serverUrl);
+
+    socket.on('connect', () => {
+      console.log('🔌 Connected to Socket.io server');
+    });
+
+    socket.on('new_user', (user) => {
+      const text = `${user.fullName || "Khách hàng"} đã đăng kí tài khoản`;
+      const newNotification = {
+        id: `u-${user._id}-${Date.now()}`,
+        text,
+        time: new Date()
+      };
+      
+      setNotifications(prev => [newNotification, ...prev].slice(0, 15));
+      setActiveToast({ id: newNotification.id, text, type: 'user' });
+    });
+
+    socket.on('new_order', (order) => {
+      const text = `${order.customer} đã đặt đơn hàng ${order.orderNumber} trị giá ${order.amount.toLocaleString('vi-VN')} đ`;
+      const newNotification = {
+        id: `o-${order._id}-${Date.now()}`,
+        text,
+        time: new Date()
+      };
+      
+      setNotifications(prev => [newNotification, ...prev].slice(0, 15));
+      setActiveToast({ id: newNotification.id, text, type: 'order' });
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  // Auto-hide toast notification after 5 seconds
+  useEffect(() => {
+    if (activeToast) {
+      const timer = setTimeout(() => {
+        setActiveToast(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [activeToast]);
+
   const handleMarkAsRead = (id) => {
     setNotifications(prev => prev.filter(n => n.id !== id));
   };
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("adminName");
+    localStorage.removeItem("adminEmail");
+    localStorage.removeItem("adminToken");
     navigate("/login");
   };
 
   return (
     <div className="navbar">
+      {/* Real-time Toast Popup */}
+      {activeToast && (
+        <div className={`admin-toast-popup ${activeToast.type}`}>
+          <div className="admin-toast-icon">
+            {activeToast.type === 'order' ? '🛒' : '👤'}
+          </div>
+          <div className="admin-toast-content">
+            <h4 className="admin-toast-title">
+              {activeToast.type === 'order' ? 'Đơn hàng mới!' : 'Thành viên mới!'}
+            </h4>
+            <p className="admin-toast-text">{activeToast.text}</p>
+          </div>
+          <button className="admin-toast-close" onClick={() => setActiveToast(null)}>×</button>
+        </div>
+      )}
+
       <div className="navbar-left">
         <h3 className="navbar-title">Bảng Điều Khiển Quản Lý</h3>
       </div>
@@ -103,16 +179,16 @@ export default function Navbar() {
             onClick={() => setShowUserMenu(!showUserMenu)}
             className="navbar-user-button"
           >
-            <div className="navbar-user-avatar">A</div>
-            <span>Admin</span>
+            <div className="navbar-user-avatar">{adminName.charAt(0).toUpperCase()}</div>
+            <span>{adminName}</span>
             <span>▼</span>
           </button>
 
           {showUserMenu && (
             <div className="navbar-user-dropdown">
               <div className="navbar-user-info">
-                <p className="navbar-user-name">👤 Admin User</p>
-                <p className="navbar-user-email">admin@example.com</p>
+                <p className="navbar-user-name">👤 {adminName}</p>
+                <p className="navbar-user-email">{adminEmail}</p>
               </div>
               <button className="navbar-user-item">⚙️ Cài Đặt Hồ Sơ</button>
               <button className="navbar-user-item">🔐 Thay Đổi Mật Khẩu</button>

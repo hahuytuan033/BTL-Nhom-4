@@ -22,6 +22,12 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Attach socket.io to req for use in controllers
+app.use((req, res, next) => {
+    req.io = io;
+    next();
+});
+
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);

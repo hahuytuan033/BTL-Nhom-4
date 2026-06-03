@@ -41,7 +41,22 @@ export default function Products() {
     <AdminLayout>
       <div className="page-container">
         <div className="section-header">
-          <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <button 
+              type="button" 
+              className="cancel-btn" 
+              onClick={() => navigate('/')} 
+              style={{ 
+                padding: '8px 16px', 
+                fontSize: '14px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '6px',
+                margin: 0
+              }}
+            >
+              ⬅ Quay lại
+            </button>
             <h1 className="section-title">Quản Lý Sản Phẩm</h1>
           </div>
           <button className="add-btn" onClick={() => navigate('/add-product')}>

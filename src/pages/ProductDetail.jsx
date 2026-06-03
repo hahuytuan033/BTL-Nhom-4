@@ -213,6 +213,16 @@ export default function ProductDetail({
           ========================================== */}
       <main className="max-w-[1300px] mx-auto px-4 md:px-10 py-6">
         
+        {/* Nút quay lại trang chính */}
+        <div className="mb-6">
+          <button 
+            onClick={onBack}
+            className="flex items-center gap-2 text-zinc-400 hover:text-[#95c0a4] transition-colors font-black uppercase text-xs tracking-widest"
+          >
+            ← Quay lại trang chủ
+          </button>
+        </div>
+        
         {/* 2-Column Product Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start mb-16">
           

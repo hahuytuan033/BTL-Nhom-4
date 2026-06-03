@@ -1,19 +1,40 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function Login() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (username === "Admin" && password === "Admin123") {
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/users/login`, {
+        email,
+        password
+      });
+
+      const { fullName, email: adminEmail, role, token } = response.data;
+
+      if (role !== "admin") {
+        setError("Tài khoản không có quyền truy cập trang quản trị!");
+        return;
+      }
+
       localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("adminName", fullName);
+      localStorage.setItem("adminEmail", adminEmail);
+      localStorage.setItem("adminToken", token);
+
       navigate("/");
-    } else {
-      setError("Sai tên đăng nhập hoặc mật khẩu");
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("Đăng nhập thất bại. Vui lòng kiểm tra thông tin hoặc kết nối!");
+      }
     }
   };
 
@@ -23,8 +44,8 @@ export default function Login() {
         <h2 style={{ marginBottom: '20px', textAlign: 'center' }}>Đăng Nhập Quản Trị</h2>
         {error && <p style={{ color: 'red', fontSize: '14px', marginBottom: '10px' }}>{error}</p>}
         <div style={{ marginBottom: '15px' }}>
-          <label>Tên đăng nhập</label>
-          <input className="input" type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
+          <label>Email đăng nhập</label>
+          <input className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </div>
         <div style={{ marginBottom: '15px' }}>
           <label>Mật khẩu</label>
@@ -35,3 +56,4 @@ export default function Login() {
     </div>
   );
 }
+

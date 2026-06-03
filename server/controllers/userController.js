@@ -32,6 +32,16 @@ exports.registerUser = async (req, res) => {
         });
 
         if (user) {
+            // Emit Socket.io event for real-time notification
+            if (req.io) {
+                req.io.emit('new_user', {
+                    _id: user._id,
+                    fullName: user.fullName,
+                    email: user.email,
+                    createdAt: user.createdAt
+                });
+            }
+
             res.status(201).json({
                 _id: user._id,
                 fullName: user.fullName,

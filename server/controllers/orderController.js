@@ -73,6 +73,18 @@ exports.createOrder = async (req, res) => {
         });
 
         await order.save();
+
+        // Emit Socket.io event for real-time notification
+        if (req.io) {
+            req.io.emit('new_order', {
+                _id: order._id,
+                customer: order.customer,
+                orderNumber: order.orderNumber,
+                amount: order.amount,
+                createdAt: order.createdAt
+            });
+        }
+
         res.status(201).json(order);
     } catch (error) {
         console.error('❌ Error:', error);
